@@ -60,11 +60,11 @@ object untyped {
     )
   }
 
-  type Dict = immutable.Map[String, Any]
-  val  Dict = immutable.Map.apply[String, Any] _
+  type Dict                         = immutable.Map[String, Any]
+  def  Dict(elems: (String, Any)*)  = immutable.Map.apply[String, Any](elems : _*)
 
-  type UList = immutable.Seq[Any]
-  val  UList = immutable.Seq.apply[Any] _
+  type UList                        = immutable.Seq[Any]
+  def  UList(elems: (String, Any)*) = immutable.Seq.apply[Any](elems : _*)
 
   // TODO Tests
   def tryCasts[X,Y](x: X)(f: X => Y, fs: (X => Y)*): Y = {
