@@ -273,7 +273,11 @@ class IntervalsSpec extends Spec {
         ("I00_P1M_Ic121",                                      II("2003/P1M", "2003-04/P1M"),         "P1M"),
         ("I00_P1D_RUbvX1u",                                    II("2003/P1M", "2003-04/P1M"),         "P1D"),
         ("I00_PT1H_ULW8EnEI1Mm",                               II("2003/P1M", "2003-04/P1M"),         "PT1H"),
-        ("I00_PT0.001S_wwzPMXFuwwFGWL2wwJKZT4wwOZDJ2",         II("2003/P1M", "2003-04/P1M"),         "PT0.001S")
+        ("I00_PT0.001S_wwzPMXFuwwFGWL2wwJKZT4wwOZDJ2",         II("2003/P1M", "2003-04/P1M"),         "PT0.001S"),
+        ("I00_P1D_0Jb",                                        II("1970/1971"),                       "P1D"),
+        ("I00_P1D_PQ__________fWm",                            II("1969/1971"),                       "P1D"),
+        ("I00_P1D_PQ__________fJb",                            II("1969/1970"),                       "P1D"),
+        ("I00_P1D_PQ__________fJbJbJb",                        II("1969/1970", "1971/1972"),          "P1D")
       )
 
       for((x, intervals, z) <- oks) {

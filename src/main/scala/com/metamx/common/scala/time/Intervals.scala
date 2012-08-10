@@ -121,7 +121,11 @@ extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] {
         scratch >>>= 5
       }
 
-      bytes
+      if(bytes.nonEmpty) {
+        bytes
+      } else {
+        Seq('0'.byteValue)
+      }
     }
 
     // How many periods are in some Interval?
