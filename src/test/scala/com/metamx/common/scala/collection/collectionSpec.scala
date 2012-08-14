@@ -16,7 +16,7 @@
 
 package com.metamx.common.scala.collection
 
-import com.codahale.simplespec.Spec
+import com.simple.simplespec.Spec
 import com.metamx.common.scala.Predef._
 import java.{util => ju}
 import org.junit.Test

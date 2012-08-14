@@ -16,7 +16,7 @@
 
 package com.metamx.common.scala
 
-import com.codahale.simplespec.Spec
+import com.simple.simplespec.Spec
 import com.metamx.common.scala.Predef._
 import org.junit.Test
 

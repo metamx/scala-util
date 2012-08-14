@@ -16,7 +16,7 @@
 
 package com.metamx.common.scala.time
 
-import com.codahale.simplespec.Spec
+import com.simple.simplespec.Spec
 import org.junit.Test
 import org.scala_tools.time.Imports._
 
@@ -77,8 +77,8 @@ class IntervalsSpec extends Spec {
         Seq() -> Seq()
 
       ) foreach { contextually { case (from, to) =>
-        Intervals.union(from map I).toSeq must be(to map I)
-        Intervals.union(from map I).toSeq must be(Intervals(to map I))
+        Intervals.union(from map I).toSeq.asInstanceOf[scala.collection.Seq[Interval]] must be((to map I))
+        Intervals.union(from map I).toSeq.asInstanceOf[scala.collection.Seq[Interval]] must be(Intervals(to map I))
         Intervals(from map I) must be(Intervals(to map I))
       }}
     }

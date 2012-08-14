@@ -124,7 +124,7 @@ extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] {
       if(bytes.nonEmpty) {
         bytes
       } else {
-        Seq('0'.byteValue)
+        Seq('0'.toByte)
       }
     }
 
@@ -260,12 +260,12 @@ object Intervals {
 
     val longs = dec(
       bytes.map(b => b match {
-        case b if('0' to '9' contains b) => b - '0'
-        case b if('a' to 'z' contains b) => b - 'a' + 10
-        case b if('A' to 'Z' contains b) => b - 'A' + 36
-        case '-'                         => 62
-        case '_'                         => 63
-      }).map(_.byteValue)
+        case b if('0' to '9' map (_.toByte) contains b) => b - '0'.toByte
+        case b if('a' to 'z' map (_.toByte) contains b) => b - 'a'.toByte + 10
+        case b if('A' to 'Z' map (_.toByte) contains b) => b - 'A'.toByte + 36
+        case '-'                                        => 62
+        case '_'                                        => 63
+      }).map(_.toByte)
     )
 
     // Try to convert period to a Duration

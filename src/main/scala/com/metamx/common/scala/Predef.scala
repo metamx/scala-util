@@ -35,8 +35,8 @@ object Predef {
   class NullOps[X](x: X) {
     def mapNull               (x0 : => X)   : X = if (x == null) x0   else x
     def mapNonNull[Y >: Null] (f  : X => Y) : Y = if (x == null) null else f(x)
-    @deprecated("Use mapNull")    def ifNull                (x0 : => X)   : X = mapNull(x0)
-    @deprecated("Use mapNonNull") def unlessNull[Y >: Null] (f  : X => Y) : Y = mapNonNull(f)
+    @deprecated("Use mapNull",    "0.5.0") def ifNull                (x0 : => X)   : X = mapNull(x0)
+    @deprecated("Use mapNonNull", "0.5.0") def unlessNull[Y >: Null] (f  : X => Y) : Y = mapNonNull(f)
   }
   implicit def NullOps[X](x: X) = new NullOps(x)
 

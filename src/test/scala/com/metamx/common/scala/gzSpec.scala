@@ -16,7 +16,7 @@
 
 package com.metamx.common.scala
 
-import com.codahale.simplespec.Spec
+import com.simple.simplespec.Spec
 import java.io.IOException
 import org.junit.Test
 import scala.util.Random
