@@ -22,7 +22,7 @@ object pretty {
   def truncate(s: String, n: Int = 500): String = if (s.length > n) s.take(n) + "..." else s
 
   // e.g. parseBytes("5 GB") == 5L * 1024*1024*1024
-  def parseBytes(s: String): Long = """\s*(\d+)\s*([A-Z]+)?\s*""".r.unapplySeq(s) match {
+  def parseBytes(s: String): Long = ("""\s*(\d+)\s*([A-Z]+)?\s*""".r.unapplySeq(s) : @unchecked) match {
     case None                => throw new IllegalArgumentException("Can't parse bytes: %s" format s)
     case Some(List(n, null)) => parseBytes(s + "B")
     case Some(List(n, suf))  => Seq("B","KB","MB","GB","TB","PB","EB","ZB","YB","BB").indexOf(suf) match {

@@ -85,10 +85,11 @@ object event {
 
     // Join two partially constructed metrics; throw IllegalArgumentException if any field is defined on both
     def + (that: Metric): Metric = {
-      def f[X >: Null](x: X, y: X, desc: String): X = (Option(x) ++ Option(y)) match {
-        case Seq()    => null
-        case Seq(z)   => z
-        case Seq(_,_) => throw new IllegalArgumentException(
+      def f[X >: Null](x: X, y: X, desc: String): X = (Option(x), Option(y)) match {
+        case (None,    None)    => null
+        case (Some(x), None)    => x
+        case (None,    Some(y)) => y
+        case (Some(x), Some(y)) => throw new IllegalArgumentException(
           "%s already defined as %s, refusing to shadow with %s" format (desc, x, y)
         )
       }
