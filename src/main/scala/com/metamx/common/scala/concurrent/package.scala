@@ -69,7 +69,7 @@ package object concurrent {
     if (delay) Thread.sleep((period.millis * Random.nextDouble).toLong) // Randomize phase
     forever {
       f
-      Thread.sleep((period.millis * (1 + fuzz * Random.nextGaussian)).toLong) // Fuzz period
+      Thread.sleep((period.millis * math.max(1 + fuzz * Random.nextGaussian, 0)).toLong) // Fuzz period
     }
   }
 
