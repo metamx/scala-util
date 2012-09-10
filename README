@@ -1,0 +1,2 @@
+com.metamx.common.scala.*  Written in scala, best used by scala client code
+com.metamx.common.*        Written in scala, usable from any jvm language
