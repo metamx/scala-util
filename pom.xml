@@ -7,9 +7,9 @@
   <version>1.0.0-SNAPSHOT</version>
 
   <scm>
-    <connection>scm:git:git://github.com/metamx/scala-common.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/metamx/scala-common.git</developerConnection>
-    <url>http://github.com/metamx/scala-common</url>
+    <connection>scm:git:git://github.com/metamx/scala-util.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/metamx/scala-util.git</developerConnection>
+    <url>http://github.com/metamx/scala-util</url>
   </scm>
   <properties>
     <scala.version>2.9.1</scala.version>
