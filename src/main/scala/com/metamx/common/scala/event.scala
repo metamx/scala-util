@@ -31,6 +31,7 @@ import java.{util => ju}
 import org.codehaus.jackson.map.ObjectMapper
 import org.joda.time.DateTime
 import scala.collection.JavaConverters._
+import compat.Platform
 
 // TODO Most, if not all, of this should be pushed up into the emitter library (or emitter-scala)
 
@@ -57,6 +58,15 @@ object event {
 
   def emitAlert(log: Logger, emitter: ServiceEmitter, severity: Severity, description: String, data: Dict) {
     emitAlert(null, log, emitter, severity, description, data)
+  }
+
+  def emitMetricTimed[T](emitter: ServiceEmitter,
+                         metric: Metric)(action: => T) = {
+    val t0 = Platform.currentTime
+    val res = action
+    val t = Platform.currentTime - t0
+    emitter.emit(metric + Metric(value = t, created = new DateTime()))
+    res
   }
 
   // HACK: Map scala-native types to java types by writing out through jerkson and reading back in through jackson.
