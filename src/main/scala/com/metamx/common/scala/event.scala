@@ -20,7 +20,6 @@ import com.metamx.common.scala.Logging.Logger
 import com.metamx.common.scala.Predef._
 import com.metamx.common.scala.untyped.Dict
 import com.metamx.common.scala.untyped.noNull
-import com.metamx.common.scala.untyped.normalizeJava
 import com.metamx.emitter.service.AlertEvent
 import com.metamx.emitter.service.AlertEvent.Severity
 import com.metamx.emitter.service.AlertEvent.Severity.{ANOMALY, COMPONENT_FAILURE, SERVICE_FAILURE}
@@ -30,7 +29,6 @@ import com.metamx.emitter.service.ServiceMetricEvent
 import java.{util => ju}
 import org.codehaus.jackson.map.ObjectMapper
 import org.joda.time.DateTime
-import scala.collection.JavaConverters._
 import compat.Platform
 
 // TODO Most, if not all, of this should be pushed up into the emitter library (or emitter-scala)
@@ -121,23 +119,23 @@ object event {
     }
 
     // Build into a ServiceMetricEvent, throwing NullPointerException if any required field is null
-    override def build(service: String, host: String) = new ServiceMetricEvent(
-      created, // ServiceMetricEvent maps null -> DateTime.now
-      noNull(service),
-      noNull(host),
-      user1  mapNonNull (_.toArray),
-      user2  mapNonNull (_.toArray),
-      user3  mapNonNull (_.toArray),
-      user4  mapNonNull (_.toArray),
-      user5  mapNonNull (_.toArray),
-      user6  mapNonNull (_.toArray),
-      user7  mapNonNull (_.toArray),
-      user8  mapNonNull (_.toArray),
-      user9  mapNonNull (_.toArray),
-      user10 mapNonNull (_.toArray),
-      noNull(metric),
-      noNull(value)
-    )
+    override def build(service: String, host: String) = {
+      val builder = ServiceMetricEvent.builder()
+
+      if (user1  != null) { builder.setUser1  (user1.toArray)  }
+      if (user2  != null) { builder.setUser2  (user2.toArray)  }
+      if (user3  != null) { builder.setUser3  (user3.toArray)  }
+      if (user4  != null) { builder.setUser4  (user4.toArray)  }
+      if (user5  != null) { builder.setUser5  (user5.toArray)  }
+      if (user6  != null) { builder.setUser6  (user6.toArray)  }
+      if (user7  != null) { builder.setUser7  (user7.toArray)  }
+      if (user8  != null) { builder.setUser8  (user8.toArray)  }
+      if (user9  != null) { builder.setUser9  (user9.toArray)  }
+      if (user10 != null) { builder.setUser10 (user10.toArray) }
+
+      builder.build(created, noNull(metric), noNull(value))
+             .build(noNull(service), noNull(host))
+    }
 
   }
 
