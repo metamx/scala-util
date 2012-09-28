@@ -4,7 +4,7 @@
 
   <groupId>com.metamx</groupId>
   <artifactId>scala-util</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2</version>
 
   <scm>
     <connection>scm:git:git://github.com/metamx/scala-util.git</connection>
