@@ -45,9 +45,10 @@ object Predef {
   }
   implicit def EffectOps[X](x: X) = new EffectOps(x)
 
+
   class RequiringOps[X](x: X){
     def requiring(f: X => (Boolean, String)) : X = { val (y, msg) = f(x); require(y, msg); x }
-    //def requiring(f: X => Boolean) // Can't overload on type arguments...
+    def requiring(f: X => Boolean, message: => Any): X = { require(f(x), message); x }
   }
   implicit def RequiringOps[X](x: X) = new RequiringOps(x)
 
