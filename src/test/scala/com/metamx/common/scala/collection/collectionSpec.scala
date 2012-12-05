@@ -83,6 +83,16 @@ class collectionSpec extends Spec {
       evaluating { List(0,1,2,3) map { x => assert(x < 3); x } takeWhile (_ < 3)  toList } must throwAn[Error]
     }
 
+    @Test def testToMapOfSeqs() {
+      val tuples = Seq("x" -> 1, "y" -> 2, "x" -> 3, "y" -> 2)
+      tuples.toMapOfSeqs must be(Map("x" -> Seq(1, 3), "y" -> Seq(2, 2)))
+    }
+
+    @Test def testToMapOfSets() {
+      val tuples = Seq("x" -> 1, "y" -> 2, "x" -> 3, "y" -> 2)
+      tuples.toMapOfSets must be(Map("x" -> Set(1, 3), "y" -> Set(2)))
+    }
+
   }
 
 }
