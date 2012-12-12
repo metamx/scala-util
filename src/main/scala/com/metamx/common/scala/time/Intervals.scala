@@ -41,7 +41,11 @@ extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] {
   override def length        = self.length
   override def newBuilder    = Intervals.newBuilder
 
-  lazy val duration = new Duration(self.map(_.millis).sum)
+  def duration = new Duration(self.map(_.millis).sum)
+
+  def overlaps(interval: Interval) = self.find(_ overlaps interval).isDefined
+
+  def contains(dt: DateTime) = self.find(_ contains dt).isDefined
 
   def latest(_duration: Duration) = new Intervals(Vector() ++ new ListBuffer[Interval].withEffect { results =>
     val breaks = new Breaks; import breaks.{breakable, break}

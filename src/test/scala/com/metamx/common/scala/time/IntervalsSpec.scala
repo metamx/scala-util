@@ -117,6 +117,28 @@ class IntervalsSpec extends Spec {
       Intervals()                                .duration must be(new Duration(0))
     }
 
+    @Test def overlaps {
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(0, 2)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(0, 2)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(0, 3)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(0, 4)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(0, 5)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(1, 2)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(1, 3)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(1, 4)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(1, 5)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(2, 3)) must be(false)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(2, 4)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(I(2, 5)) must be(true)
+    }
+
+    @Test def contains {
+      Intervals(I(0, 2), I(3, 4)).contains(D(0)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).contains(D(1)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).contains(D(2)) must be(false)
+      Intervals(I(0, 2), I(3, 4)).contains(D(3)) must be(true)
+    }
+
     @Test def latest {
       Seq(
 
