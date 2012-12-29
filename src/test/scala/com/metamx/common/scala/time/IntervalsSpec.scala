@@ -117,7 +117,7 @@ class IntervalsSpec extends Spec {
       Intervals()                                .duration must be(new Duration(0))
     }
 
-    @Test def overlaps {
+    @Test def overlapsInterval {
       Intervals(I(0, 2), I(3, 4)).overlaps(I(0, 2)) must be(true)
       Intervals(I(0, 2), I(3, 4)).overlaps(I(0, 2)) must be(true)
       Intervals(I(0, 2), I(3, 4)).overlaps(I(0, 3)) must be(true)
@@ -132,11 +132,11 @@ class IntervalsSpec extends Spec {
       Intervals(I(0, 2), I(3, 4)).overlaps(I(2, 5)) must be(true)
     }
 
-    @Test def contains {
-      Intervals(I(0, 2), I(3, 4)).contains(D(0)) must be(true)
-      Intervals(I(0, 2), I(3, 4)).contains(D(1)) must be(true)
-      Intervals(I(0, 2), I(3, 4)).contains(D(2)) must be(false)
-      Intervals(I(0, 2), I(3, 4)).contains(D(3)) must be(true)
+    @Test def overlapsDateTime {
+      Intervals(I(0, 2), I(3, 4)).overlaps(D(0)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(D(1)) must be(true)
+      Intervals(I(0, 2), I(3, 4)).overlaps(D(2)) must be(false)
+      Intervals(I(0, 2), I(3, 4)).overlaps(D(3)) must be(true)
     }
 
     @Test def latest {

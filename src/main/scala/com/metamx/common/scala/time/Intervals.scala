@@ -45,7 +45,7 @@ extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] {
 
   def overlaps(interval: Interval) = self.find(_ overlaps interval).isDefined
 
-  def contains(dt: DateTime) = self.find(_ contains dt).isDefined
+  def overlaps(dt: DateTime) = self.find(_ contains dt).isDefined
 
   def latest(_duration: Duration) = new Intervals(Vector() ++ new ListBuffer[Interval].withEffect { results =>
     val breaks = new Breaks; import breaks.{breakable, break}
