@@ -54,6 +54,11 @@ package object collection {
 
   class TraversableLikeOps[X, F[Y] <: TraversableLike[Y, F[Y]]](xs: F[X]) {
 
+    def onlyElement = {
+      require(xs.size == 1, "expected single element")
+      xs.head
+    }
+
     /**
      * For preserving laziness, e.g.
      *

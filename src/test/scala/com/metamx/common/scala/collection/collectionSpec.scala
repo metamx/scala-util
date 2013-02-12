@@ -18,9 +18,7 @@ package com.metamx.common.scala.collection
 
 import com.simple.simplespec.Spec
 import com.metamx.common.scala.Predef._
-import java.{util => ju}
 import org.junit.Test
-import scala.collection.JavaConverters._
 
 class collectionSpec extends Spec {
 
@@ -91,6 +89,18 @@ class collectionSpec extends Spec {
     @Test def testToMapOfSets() {
       val tuples = Seq("x" -> 1, "y" -> 2, "x" -> 3, "y" -> 2)
       tuples.toMapOfSets must be(Map("x" -> Set(1, 3), "y" -> Set(2)))
+    }
+
+    @Test def testOnlyElement() {
+      Seq("foo").onlyElement must be("foo")
+
+      evaluating {
+        Seq().onlyElement
+      } must throwAn[IllegalArgumentException]
+
+      evaluating {
+        Seq("foo", "bar").onlyElement
+      } must throwAn[IllegalArgumentException]
     }
 
   }
