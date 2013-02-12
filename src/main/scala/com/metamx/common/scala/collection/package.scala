@@ -49,15 +49,14 @@ package object collection {
       .mapValues(_.map(_._2))
       .toMap
 
+    def onlyElement = {
+      require(xs.size == 1, "expected single element")
+      xs.toSeq.head
+    }
   }
   implicit def TraversableOnceOps[X, F[Y] <: TraversableOnce[Y]](xs: F[X]) = new TraversableOnceOps[X,F](xs)
 
   class TraversableLikeOps[X, F[Y] <: TraversableLike[Y, F[Y]]](xs: F[X]) {
-
-    def onlyElement = {
-      require(xs.size == 1, "expected single element")
-      xs.head
-    }
 
     /**
      * For preserving laziness, e.g.
