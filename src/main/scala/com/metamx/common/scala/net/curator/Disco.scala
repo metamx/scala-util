@@ -1,0 +1,110 @@
+package com.metamx.common.scala.net.curator
+
+import com.netflix.curator.framework.CuratorFramework
+import com.netflix.curator.x.discovery.{ServiceDiscoveryBuilder, ServiceInstance}
+import com.metamx.common.lifecycle.{LifecycleStop, LifecycleStart, Lifecycle}
+import com.metamx.common.lifecycle.Lifecycle.Handler
+import java.net.URI
+import scala.collection.JavaConverters._
+
+class Disco(curator: CuratorFramework, config: DiscoConfig)
+{
+  private val me: Option[ServiceInstance[Void]] = config.discoAnnounce map {
+    service =>
+      val builder = ServiceInstance.builder[Void]().name(service.name)
+      if (service.ssl) {
+        builder.sslPort(service.port)
+      } else {
+        builder.port(service.port)
+      }
+
+      builder.build()
+  }
+
+  private val disco = {
+    val builder = ServiceDiscoveryBuilder.builder(Void.TYPE)
+      .basePath(config.discoPath)
+      .client(curator)
+
+    if (me.isDefined) {
+      builder.thisInstance(me.get)
+    }
+
+    builder.build()
+  }
+
+  def providerFor(service: String, lifecycle: Lifecycle) = {
+    val provider = disco.serviceProviderBuilder().serviceName(service).build()
+
+    lifecycle.addHandler(
+      new Handler
+      {
+
+        def start() {
+          provider.start()
+        }
+
+        def stop() {
+          provider.close()
+        }
+      }
+    )
+
+    provider
+  }
+
+  /** Discovers a URI once, without a provider. This should be avoided in high volume use cases. */
+  def instanceFor(service: String): Option[ServiceInstance[Void]] = disco.queryForInstances(service).asScala.headOption
+
+  @LifecycleStart
+  def start() {
+    disco.start()
+  }
+
+  @LifecycleStop
+  def stop() {
+    disco.close()
+  }
+}
+
+class ServiceInstanceOps[T](service: ServiceInstance[T])
+{
+  def name = service.getName
+
+  def id = service.getId
+
+  def port = service.getPort
+
+  def sslPort = service.getSslPort
+
+  def payload = service.getPayload
+
+  def registrationTimeUTC = service.getRegistrationTimeUTC
+
+  def serviceType = service.getServiceType
+
+  def uriSpec = service.getUriSpec
+
+  /**
+   * Extract a usable URI from this ServiceInstance. Will use the uriSpec if present, or otherwise will
+   * attempt some reasonable default.
+   */
+  def uri = Option(uriSpec) map (uriSpec => new URI(uriSpec.build(service))) getOrElse {
+    val (proto, port) = if (service.getSslPort != null && service.getSslPort > 0) {
+      ("https", service.getSslPort)
+    } else {
+      ("http", service.getPort)
+    }
+
+    new URI(proto, "%s:%s" format(service.getAddress, port), "/", null, null)
+  }
+}
+
+trait DiscoConfig
+{
+  def discoPath: String
+
+  def discoAnnounce: Option[DiscoAnnounceConfig]
+}
+
+case class DiscoAnnounceConfig(name: String, port: Int, ssl: Boolean)

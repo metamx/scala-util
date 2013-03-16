@@ -129,6 +129,18 @@
       <version>0.9.1.2</version>
     </dependency>
 
+    <!-- Curator -->
+    <dependency>
+      <groupId>com.netflix.curator</groupId>
+      <artifactId>curator-recipes</artifactId>
+      <version>1.2.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.netflix.curator</groupId>
+      <artifactId>curator-x-discovery</artifactId>
+      <version>1.2.3</version>
+    </dependency>
+
     <!-- scala -->
     <dependency>
       <groupId>org.scala-lang</groupId>
