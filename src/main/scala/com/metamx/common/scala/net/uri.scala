@@ -16,13 +16,16 @@
 
 package com.metamx.common.scala.net
 
+import java.net.URLEncoder
+
 // Scala api for java.net.URI
 
 object uri {
 
   type URI = java.net.URI
 
-  class URIOps(val u: URI) {
+  class URIOps(u: URI)
+  {
 
     // URI terminology reference: http://docs.oracle.com/javase/6/docs/api/java/net/URI.html
 
@@ -78,5 +81,22 @@ object uri {
   implicit def URIOps(u: URI) = new URIOps(u)
 
   implicit val uriOrdering: Ordering[URI] = Ordering.by(_.toString)
+
+  class TraversableOnceQueryStringOps[X, F[Y] <: TraversableOnce[Y]](xs: F[X])
+  {
+    def toQueryString[T](implicit ev: X <:< (String, T)): String = xs.toSeq map {
+      case (k: String, v: Any) =>
+        "%s=%s" format(URLEncoder.encode(k, "UTF-8"), URLEncoder.encode(v.toString, "UTF-8"))
+    } mkString "&"
+  }
+  implicit def TraversableOnceQueryStringOps[X, F[Y] <: TraversableOnce[Y]](xs: F[X]) = new
+      TraversableOnceQueryStringOps[X, F](xs)
+
+  // Not sure why this is needed, but the compiler can't find TOQSO when given a Map...
+  class MapQueryStringOps[T](m: Map[String, T])
+  {
+    def toQueryString = new TraversableOnceQueryStringOps(m).toQueryString
+  }
+  implicit def Map2TraversableOnceQueryStringOps[T](m: Map[String, T]) = new MapQueryStringOps(m)
 
 }
