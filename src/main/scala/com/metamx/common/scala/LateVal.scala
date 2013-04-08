@@ -43,16 +43,23 @@ package com.metamx.common.scala
  */
 object LateVal {
 
-  class LateVal[X](@volatile private var v: Option[X] = None) {
+  class LateVal[X] {
 
-    def assign(x: X) { v match {
-      case None    => v = Some(x)
-      case Some(y) => throw new UnsupportedOperationException("LateVal(%s) already defined: assign(%s)" format (y,x))
-    }}
+    val monitor = new AnyRef
+    @volatile private var v: Option[X] = None
 
-    def deref: X = v match {
-      case Some(x) => x
-      case None    => throw new IllegalArgumentException("Undefined LateVal")
+    def assign(x: X) {
+      monitor synchronized {
+        if (v == None) {
+          v = Some(x)
+        } else {
+          throw new IllegalStateException("LateVal(%s) already defined: assign(%s)" format (v.get, x))
+        }
+      }
+    }
+
+    def deref: X = v getOrElse {
+      throw new IllegalArgumentException("Undefined LateVal")
     }
 
     def derefOption: Option[X] = v
