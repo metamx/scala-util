@@ -17,7 +17,7 @@
 package com.metamx.common.scala
 
 trait Logging {
-  lazy val log = org.eintr.loglady.Logger(getClass)
+  implicit val log = org.eintr.loglady.Logger(getClass)
 }
 
 object Logging {
