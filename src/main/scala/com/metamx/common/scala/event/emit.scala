@@ -10,6 +10,7 @@ import scala.compat.Platform
 import org.scala_tools.time.Imports._
 import org.codehaus.jackson.map.ObjectMapper
 import Severity._
+import com.google.common.base.Throwables
 
 object emit
 {
@@ -31,8 +32,16 @@ object emit
     )
 
     emitter.emit({
-      AlertBuilder.create(description).severity(severity) withEffect { x =>
-        data foreach { case (k, v) => x.addData(k, v) }
+      AlertBuilder.create(description).severity(severity) withEffect {
+        x =>
+          (data ++
+            Option(e).map(
+              e => Dict(
+                "exception" -> Throwables.getStackTraceAsString(e)
+              )
+            ).getOrElse(Dict())) foreach {
+            case (k, v) => x.addData(k, v)
+          }
       }
     } build)
   }
