@@ -1,7 +1,7 @@
 package com.metamx.common.scala.net.curator
 
 import com.netflix.curator.framework.CuratorFramework
-import com.netflix.curator.x.discovery.{ServiceDiscoveryBuilder, ServiceInstance}
+import com.netflix.curator.x.discovery.{ServiceProvider, ServiceDiscoveryBuilder, ServiceInstance}
 import com.metamx.common.lifecycle.{LifecycleStop, LifecycleStart, Lifecycle}
 import com.metamx.common.lifecycle.Lifecycle.Handler
 import java.net.URI
@@ -65,6 +65,11 @@ class Disco(curator: CuratorFramework, config: DiscoConfig)
   def stop() {
     disco.close()
   }
+}
+
+class ServiceProviderOps[T](provider: ServiceProvider[T])
+{
+  def instance = Option(provider.getInstance())
 }
 
 class ServiceInstanceOps[T](service: ServiceInstance[T])
