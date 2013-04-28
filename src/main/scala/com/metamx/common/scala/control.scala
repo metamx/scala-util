@@ -17,9 +17,9 @@
 package com.metamx.common.scala
 
 import com.metamx.common.Backoff
-import com.metamx.common.scala.control.untilSome
 import com.metamx.common.scala.option.OptionOps
 import scala.reflect.ClassManifest
+import org.scala_tools.time.Imports._
 
 import scala.annotation.tailrec
 
@@ -36,13 +36,17 @@ object control extends Logging {
   //def untilSome[X](x: => Option[X]): X = Stream.continually(x).flatten.head
 
   def retryOnError[E <: Exception](isTransient: E => Boolean) = new {
-    def apply[X](x: => X)(implicit cm: ClassManifest[E]): X = {
-      withBackoff { backoff =>
-        try Some(x) catch {
-          case e: Exception if cm.erasure.isAssignableFrom(e.getClass) && isTransient(e.asInstanceOf[E]) =>
-            log.warn(e, "Transient error, retrying after %s ms", backoff.next)
-            None
-        }
+    def apply[X](x: => X)(implicit cm: ClassManifest[E]) = retryOnErrors(
+      (e: Exception) => cm.erasure.isAssignableFrom(e.getClass) && isTransient(e.asInstanceOf[E])
+    )(x)
+  }
+
+  def retryOnErrors[X](isTransients: (Exception => Boolean)*)(x: => X): X = {
+    withBackoff { backoff =>
+      try Some(x) catch {
+        case e: Exception if isTransients.find(_(e)).isDefined =>
+          log.warn(e, "Transient error, retrying after %s ms", backoff.next)
+          None
       }
     }
   }
@@ -55,5 +59,29 @@ object control extends Logging {
       }
     }
   }
+
+  def ifException[E <: Exception](implicit cm: ClassManifest[E]) = (e: Exception) =>
+    cm.erasure.isAssignableFrom(e.getClass)
+
+  class PredicateOps[A](f: A => Boolean)
+  {
+    def untilCount(count: Int) = {
+      var n = 0
+      (a: A) => if (n < count) {
+        val x = f(a)
+        n += 1
+        x
+      } else {
+        false
+      }
+    }
+
+    def untilPeriod(period: Period) = {
+      val end = DateTime.now + period
+      (a: A) => if (DateTime.now < end) f(a) else false
+    }
+  }
+
+  implicit def PredicateOps[A](f: A => Boolean) = new PredicateOps(f)
 
 }
