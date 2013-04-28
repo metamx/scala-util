@@ -30,6 +30,6 @@ class Backoff(start: Long, growth: Double, max: Long, fuzz: Double) {
     next = start
   }
 
-  def fuzzy(x: Long): Long = ((1 + fuzz * Random.nextGaussian) * x).toLong
+  def fuzzy(x: Long): Long = (math.max(1 + fuzz * Random.nextGaussian, 0) * x).toLong
 
 }
