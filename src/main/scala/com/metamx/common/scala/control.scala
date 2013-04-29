@@ -41,6 +41,7 @@ object control extends Logging {
     )(x)
   }
 
+  // FIXME When used with untilPeriod, the last sleep is useless
   def retryOnErrors[X](isTransients: (Exception => Boolean)*)(x: => X): X = {
     withBackoff { backoff =>
       try Some(x) catch {
