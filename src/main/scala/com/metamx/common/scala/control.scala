@@ -64,6 +64,9 @@ object control extends Logging {
   def ifException[E <: Exception](implicit cm: ClassManifest[E]) = (e: Exception) =>
     cm.erasure.isAssignableFrom(e.getClass)
 
+  def ifExceptionSatisfies[E <: Exception](pred: E => Boolean)(implicit cm: ClassManifest[E]) = (e: Exception) =>
+    cm.erasure.isAssignableFrom(e.getClass) && pred(e.asInstanceOf[E])
+
   class PredicateOps[A](f: A => Boolean)
   {
     def untilCount(count: Int) = {

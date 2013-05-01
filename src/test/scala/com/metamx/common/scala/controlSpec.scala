@@ -8,7 +8,7 @@ import com.metamx.common.scala.control._
 class controlSpec extends Spec
 {
 
-  class A
+  class RetryOnError
   {
 
     def transientFailure[E <: Exception](period: Period)(implicit cm: ClassManifest[E]) = {
@@ -93,11 +93,58 @@ class controlSpec extends Spec
     @Test
     def testCountoutReached()
     {
+      var count = 0
       val f = transientFailure[IllegalStateException](1.second)
       evaluating {
         retryOnError(
           ifException[IllegalStateException] untilCount(1)
-        )(f())
+        ) {
+          count += 1
+          f()
+        }
+      } must throwAn[IllegalStateException]
+      count must be(2)
+    }
+
+
+    @Test
+    def testCountoutZero()
+    {
+      var count = 0
+      val f = transientFailure[IllegalStateException](1.second)
+      evaluating {
+        retryOnError(
+          ifException[IllegalStateException] untilCount(0)
+        ) {
+          count += 1
+          f()
+        }
+      } must throwAn[IllegalStateException]
+      count must be(1)
+    }
+
+    @Test
+    def testIfExceptionSatisfies()
+    {
+      val f = transientFailure[IllegalStateException](1.second)
+      retryOnErrors(ifExceptionSatisfies[IllegalStateException](_.getCause == null)) { f.apply() } must be("hello world")
+    }
+
+    @Test
+    def testIfExceptionDoesNotSatisfyClass()
+    {
+      val f = transientFailure[IllegalStateException](1.second)
+      evaluating {
+        retryOnErrors(ifExceptionSatisfies[IllegalArgumentException](_.getCause == null)) { f.apply() }
+      } must throwAn[IllegalStateException]
+    }
+
+    @Test
+    def testIfExceptionDoesNotSatisfyTest()
+    {
+      val f = transientFailure[IllegalStateException](1.second)
+      evaluating {
+        retryOnErrors(ifExceptionSatisfies[IllegalStateException](_.getCause != null)) { f.apply() }
       } must throwAn[IllegalStateException]
     }
 
