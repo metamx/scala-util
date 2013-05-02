@@ -1,11 +1,11 @@
 package com.metamx.common.scala.net.curator
 
-import com.netflix.curator.framework.CuratorFramework
-import com.netflix.curator.x.discovery.{ServiceProvider, ServiceDiscoveryBuilder, ServiceInstance}
 import com.metamx.common.lifecycle.{LifecycleStop, LifecycleStart, Lifecycle}
 import com.metamx.common.lifecycle.Lifecycle.Handler
 import java.net.URI
 import scala.collection.JavaConverters._
+import org.apache.curator.framework.CuratorFramework
+import org.apache.curator.x.discovery.{ServiceProvider, ServiceDiscoveryBuilder, ServiceInstance}
 
 class Disco(curator: CuratorFramework, config: DiscoConfig)
 {

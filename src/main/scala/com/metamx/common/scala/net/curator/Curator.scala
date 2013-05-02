@@ -1,11 +1,10 @@
 package com.metamx.common.scala.net.curator
 
-import com.netflix.curator.framework.CuratorFramework
 import com.metamx.common.lifecycle.Lifecycle
 import com.metamx.common.lifecycle.Lifecycle.Handler
-import com.netflix.curator.framework.CuratorFrameworkFactory
-import com.netflix.curator.retry.ExponentialBackoffRetry
 import org.joda.time.Duration
+import org.apache.curator.framework.{CuratorFrameworkFactory, CuratorFramework}
+import org.apache.curator.retry.ExponentialBackoffRetry
 
 object Curator
 {

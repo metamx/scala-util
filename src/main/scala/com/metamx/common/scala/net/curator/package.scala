@@ -1,6 +1,6 @@
 package com.metamx.common.scala.net
 
-import com.netflix.curator.x.discovery.{ServiceProvider, ServiceInstance}
+import org.apache.curator.x.discovery.{ServiceProvider, ServiceInstance}
 
 package object curator
 {
