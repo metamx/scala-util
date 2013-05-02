@@ -26,12 +26,14 @@ object Emitting
   type ServiceEmitter = com.metamx.emitter.service.ServiceEmitter
   type Severity = com.metamx.emitter.service.AlertEvent.Severity
 
-  private val emitterLateVal = new LateVal[ServiceEmitter]
+  @volatile private[this] var _emitter: Option[ServiceEmitter] = None
 
-  def emitter = emitterLateVal.deref
+  def emitter = _emitter getOrElse {
+    throw new IllegalStateException("Emitter not set! (Try Emitting.emitter = ...)")
+  }
 
   def emitter_=(_emitter: ServiceEmitter) {
-    emitterLateVal.assign(_emitter)
+    this._emitter = Some(_emitter)
     EmittingLogger.registerEmitter(_emitter)
   }
 }
