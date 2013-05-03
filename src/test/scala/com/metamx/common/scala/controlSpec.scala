@@ -73,7 +73,7 @@ class controlSpec extends Spec
     @Test
     def testTimeoutReached()
     {
-      val f = transientFailure[IllegalStateException](1.second)
+      val f = transientFailure[IllegalStateException](10.seconds)
       evaluating {
         retryOnError(
           ifException[IllegalStateException] untilPeriod(500.millis)
