@@ -58,6 +58,14 @@ object LateVal {
       }
     }
 
+    def assignIfEmpty(x: X) {
+      monitor synchronized {
+        if (v == None) {
+          v = Some(x)
+        }
+      }
+    }
+
     def deref: X = v getOrElse {
       throw new IllegalArgumentException("Undefined LateVal")
     }
