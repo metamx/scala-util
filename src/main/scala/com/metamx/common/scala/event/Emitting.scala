@@ -6,8 +6,15 @@ import Emitting._
 import com.metamx.common.scala.LateVal.LateVal
 import com.metamx.emitter.EmittingLogger
 
+// TODO Implicits or cake to convert these runtime exceptions into compile-time errors?
+
 trait Emitting extends Logging
 {
+  val WARN = com.metamx.common.scala.event.WARN
+  val ERROR = com.metamx.common.scala.event.ERROR
+
+  Emitting.requireEmitter()
+
   def emitter: ServiceEmitter = Emitting.emitter
 
   def emitAlert(e: Throwable, severity: Severity, description: String, data: Dict)
@@ -26,14 +33,18 @@ object Emitting
   type ServiceEmitter = com.metamx.emitter.service.ServiceEmitter
   type Severity = com.metamx.emitter.service.AlertEvent.Severity
 
-  @volatile private[this] var _emitter: Option[ServiceEmitter] = None
+  private[this] val _emitter = new LateVal[ServiceEmitter]
 
-  def emitter = _emitter getOrElse {
+  // Same as `emitter`, but emphasizes that an exception will be thrown if the emitter is not found
+  def requireEmitter(): ServiceEmitter = _emitter.derefOption getOrElse {
     throw new IllegalStateException("Emitter not set! (Try Emitting.emitter = ...)")
   }
 
+  // Same as `requireEmitter()`, but less verbose and emphasizes the return value over the exception behavior
+  def emitter: ServiceEmitter = requireEmitter()
+
   def emitter_=(_emitter: ServiceEmitter) {
-    this._emitter = Some(_emitter)
+    this._emitter.assignIfEmpty(_emitter)
     EmittingLogger.registerEmitter(_emitter)
   }
 }
