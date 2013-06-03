@@ -24,7 +24,7 @@ object lifecycle {
   class LifecycleOps(lifecycle: Lifecycle) {
     def apply[X](x: X): X = lifecycle.addManagedInstance(x)
 
-    def onStart(f: => Any) {
+    def onStart(f: => Any) = {
       lifecycle.addHandler(
         new Handler {
           def start() {
@@ -34,9 +34,10 @@ object lifecycle {
           def stop() {}
         }
       )
+      lifecycle
     }
 
-    def onStop(f: => Any) {
+    def onStop(f: => Any) = {
       lifecycle.addHandler(
         new Handler {
           def start() {}
@@ -46,6 +47,7 @@ object lifecycle {
           }
         }
       )
+      lifecycle
     }
   }
   implicit def LifecycleOps(x: Lifecycle) = new LifecycleOps(x)
