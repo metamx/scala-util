@@ -17,11 +17,36 @@
 package com.metamx.common.scala
 
 import com.metamx.common.lifecycle.Lifecycle
+import com.metamx.common.lifecycle.Lifecycle.Handler
 
 object lifecycle {
 
   class LifecycleOps(lifecycle: Lifecycle) {
     def apply[X](x: X): X = lifecycle.addManagedInstance(x)
+
+    def onStart(f: => Any) {
+      lifecycle.addHandler(
+        new Handler {
+          def start() {
+            f
+          }
+
+          def stop() {}
+        }
+      )
+    }
+
+    def onStop(f: => Any) {
+      lifecycle.addHandler(
+        new Handler {
+          def start() {}
+
+          def stop() {
+            f
+          }
+        }
+      )
+    }
   }
   implicit def LifecycleOps(x: Lifecycle) = new LifecycleOps(x)
 
