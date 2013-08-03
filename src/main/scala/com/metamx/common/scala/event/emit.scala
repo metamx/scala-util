@@ -34,7 +34,7 @@ object emit
     emitter.emit({
       AlertBuilder.create(description).severity(severity) withEffect {
         x =>
-          (data ++
+          (dict(normalizeJavaViaJson(data)) ++
             Option(e).map(
               e => Dict(
                 "exception" -> Throwables.getStackTraceAsString(e)
