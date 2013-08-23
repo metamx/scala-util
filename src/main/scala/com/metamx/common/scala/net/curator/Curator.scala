@@ -8,11 +8,11 @@ import org.apache.curator.retry.ExponentialBackoffRetry
 
 object Curator
 {
-  def create(config: CuratorConfig, lifecycle: Lifecycle): CuratorFramework = {
+  def create(zkConnect: String, zkTimeout: Duration, lifecycle: Lifecycle): CuratorFramework = {
     val curator = CuratorFrameworkFactory
       .builder()
-      .connectString(config.zkConnect)
-      .sessionTimeoutMs(config.zkTimeout.getMillis.toInt)
+      .connectString(zkConnect)
+      .sessionTimeoutMs(zkTimeout.getMillis.toInt)
       .retryPolicy(new ExponentialBackoffRetry(1000, 30))
       .build()
 
@@ -30,6 +30,10 @@ object Curator
     )
 
     curator
+  }
+
+  def create(config: CuratorConfig, lifecycle: Lifecycle): CuratorFramework = {
+    create(config.zkConnect, config.zkTimeout, lifecycle)
   }
 }
 
