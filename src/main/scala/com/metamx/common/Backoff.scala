@@ -17,19 +17,34 @@
 package com.metamx.common
 
 import _root_.scala.util.Random
+import java.util.concurrent.atomic.AtomicLong
 
-class Backoff(start: Long, growth: Double, max: Long, fuzz: Double) {
+class Backoff(start: Long, growth: Double, max: Long, fuzz: Double)
+{
   def this(start: Long, growth: Double, max: Long) = this(start, growth, max, .2) // (Java doesn't speak default args)
 
-  var next: Long = fuzzy(start)
-  def sleep {
-    Thread.sleep(next)
-    next = fuzzy(math.min(max, (next * growth).toInt))
+  private[this] val _next: AtomicLong = new AtomicLong(fuzzy(start))
+
+  def next = _next.get()
+
+  def incr() {
+    _next.set(fuzzy(math.min(max, (_next.get() * growth).toLong)))
   }
-  def reset {
-    next = start
+
+  def sleep() {
+    Thread.sleep(next)
+    incr()
+  }
+
+  def reset() {
+    _next.set(start)
   }
 
   def fuzzy(x: Long): Long = (math.max(1 + fuzz * Random.nextGaussian, 0) * x).toLong
 
+}
+
+object Backoff
+{
+  def standard() = new Backoff(200, 2, 30000)
 }

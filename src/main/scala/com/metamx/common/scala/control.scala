@@ -53,7 +53,7 @@ object control extends Logging {
   }
 
   def withBackoff[X](f: Backoff => Option[X]): X = {
-    val backoff = new Backoff(200, 2, 30000)
+    val backoff = Backoff.standard()
     untilSome {
       f(backoff) ifEmpty {
         backoff.sleep
