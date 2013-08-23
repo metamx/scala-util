@@ -5,7 +5,7 @@ import com.metamx.common.lifecycle.Lifecycle.Handler
 import java.net.URI
 import scala.collection.JavaConverters._
 import org.apache.curator.framework.CuratorFramework
-import org.apache.curator.x.discovery.{ServiceProvider, ServiceDiscoveryBuilder, ServiceInstance}
+import org.apache.curator.x.discovery.{ServiceCache, ServiceProvider, ServiceDiscoveryBuilder, ServiceInstance}
 
 class Disco(curator: CuratorFramework, config: DiscoConfig)
 {
@@ -53,7 +53,28 @@ class Disco(curator: CuratorFramework, config: DiscoConfig)
     provider
   }
 
-  /** Discovers a URI once, without a provider. This should be avoided in high volume use cases. */
+  def cacheFor(service: String, lifecycle: Lifecycle) = {
+    val cache = disco.serviceCacheBuilder().name(service).build()
+
+    lifecycle.addHandler(
+      new Handler
+      {
+        def start() {
+          cache.start()
+        }
+
+        def stop() {
+          cache.close()
+        }
+      }
+    )
+
+    cache
+  }
+
+  /**
+   * Discovers a URI once, without a provider. This should be avoided in high volume use cases.
+   */
   def instanceFor(service: String): Option[ServiceInstance[Void]] = disco.queryForInstances(service).asScala.headOption
 
   @LifecycleStart
@@ -69,7 +90,12 @@ class Disco(curator: CuratorFramework, config: DiscoConfig)
 
 class ServiceProviderOps[T](provider: ServiceProvider[T])
 {
-  def instance = Option(provider.getInstance())
+  def instance: Option[ServiceInstance[T]] = Option(provider.getInstance())
+}
+
+class ServiceCacheOps[T](cache: ServiceCache[T])
+{
+  def instances: Seq[ServiceInstance[T]] = cache.getInstances.asScala
 }
 
 class ServiceInstanceOps[T](service: ServiceInstance[T])
