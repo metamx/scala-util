@@ -17,7 +17,7 @@
 package com.metamx.common.scala.collection
 
 import java.util.concurrent.ConcurrentHashMap
-import scala.collection.JavaConverters._
+import scala.collection.JavaConversions.asScalaConcurrentMap
 import scala.collection.{mutable => _mutable}
 import scala.collection.mutable.HashMap
 
@@ -27,7 +27,7 @@ object mutable {
 
   // A scala-friendly way to create a ConcurrentMap backed by a juc.ConcurrentHashMap
   object ConcurrentMap {
-    def apply[K,V](xs: (K,V)*): ConcurrentMap[K,V] = new ConcurrentHashMap().asScala withEffect {
+    def apply[K,V](xs: (K,V)*): ConcurrentMap[K,V] = asScalaConcurrentMap(new ConcurrentHashMap()) withEffect {
       _ ++= xs
     }
   }

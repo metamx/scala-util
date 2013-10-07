@@ -25,11 +25,9 @@ import gz._
 
 class gzSpec extends Spec {
 
-  val bytes = Stream.fill(1024) { Random.nextPrintableChar }.mkString("").getBytes
-
-  def str(bytes: Array[Byte]) = new String(bytes)
-
   class A {
+
+    def str(bytes: Array[Byte]) = new String(bytes)
 
     @Test def empty {
 
@@ -44,6 +42,7 @@ class gzSpec extends Spec {
     }
 
     @Test def nonEmpty {
+      val bytes = Stream.fill(1024) { Random.nextPrintableChar }.mkString("").getBytes
 
       isGzip(bytes)                must be(false)
       isGzip(gzip(bytes))          must be(true)
@@ -59,6 +58,8 @@ class gzSpec extends Spec {
     }
 
     @Test def doubleZip {
+      val bytes = Stream.fill(1024) { Random.nextPrintableChar }.mkString("").getBytes
+
       str(gunzip(gunzip(gzip(gzip(bytes))))) must be(str(bytes))
       str(gunzip(gzip(gzip(bytes))))         must be(str(gzip(bytes)))
     }
