@@ -14,16 +14,13 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <scala.version.major>2.9</scala.version.major>
-    <scala.version>${scala.version.major}.1</scala.version>
+    <scala.version.major>2.10</scala.version.major>
+    <scala.version>${scala.version.major}.2</scala.version>
   </properties>
 
   <profiles>
     <profile>
       <id>scala-2.9</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
       <properties>
         <simplespec.version>0.6.0</simplespec.version>
       </properties>
@@ -39,6 +36,9 @@
 
     <profile>
       <id>scala-2.10</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <properties>
         <simplespec.version>0.8.4</simplespec.version>
       </properties>
