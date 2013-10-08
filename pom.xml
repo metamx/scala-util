@@ -19,9 +19,6 @@
   <profiles>
     <profile>
       <id>scala-2.9</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
       <properties>
         <scala.version.major>2.9</scala.version.major>
         <scala.version>${scala.version.major}.1</scala.version>
