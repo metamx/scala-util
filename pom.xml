@@ -4,7 +4,7 @@
 
   <groupId>com.metamx</groupId>
   <artifactId>scala-util_${scala.version}</artifactId>
-  <version>1.5.2</version>
+  <version>1.5.3-SNAPSHOT</version>
 
   <scm>
     <connection>scm:git:git://github.com/metamx/scala-util.git</connection>
@@ -14,14 +14,17 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <scala.version.major>2.9</scala.version.major>
+    <scala.version>${scala.version.major}.1</scala.version>
   </properties>
 
   <profiles>
     <profile>
       <id>scala-2.9</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <properties>
-        <scala.version.major>2.9</scala.version.major>
-        <scala.version>${scala.version.major}.1</scala.version>
         <simplespec.version>0.6.0</simplespec.version>
       </properties>
 
@@ -37,8 +40,6 @@
     <profile>
       <id>scala-2.10</id>
       <properties>
-        <scala.version.major>2.10</scala.version.major>
-        <scala.version>${scala.version.major}.2</scala.version>
         <simplespec.version>0.8.4</simplespec.version>
       </properties>
 
