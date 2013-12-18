@@ -39,6 +39,8 @@ object chaincast
     def asDouble = double(o)
 
     def asFloat = float(o)
+
+    def unwrap = o
   }
 
 }
