@@ -1,6 +1,7 @@
 package com.metamx.common.scala.counters
 
 import com.metamx.common.scala.event.Metric
+import com.metamx.metrics.Monitor
 
 /**
  * Snapshottable counters. Useful for both streaming metrics (snapshot periodically, emit) and batch
@@ -10,7 +11,7 @@ trait Counters
 {
   def snapshotAndReset(): Counters.Snapshot
 
-  def monitor = new CountersMonitor(this)
+  def monitor: Monitor = new CountersMonitor(this)
 }
 
 object Counters
