@@ -65,4 +65,7 @@ class MySQLDB(config: DBConfig) extends DB(config) {
 
   }
 
+  override def createTable(table: String, decls: Seq[String]) {
+    execute("create table %s (%s) engine=innodb charset=utf8" format (table, decls mkString ", "))
+  }
 }

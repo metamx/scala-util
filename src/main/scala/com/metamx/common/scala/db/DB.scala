@@ -50,6 +50,8 @@ abstract class DB(config: DBConfig) extends Logging {
 
   def createIsTransient: Throwable => Boolean
 
+  def createTable(table: String, decls: Seq[String])
+
   def select(sql: String, args: Any*): IndexedSeq[Dict] = {
     inTransaction {
       log.trace("select: %s, %s", oneLineSql(sql), args)
@@ -188,7 +190,7 @@ abstract class DB(config: DBConfig) extends Logging {
           log.info("Table already exists: %s", table)
         } else {
           log.info("Creating table: %s", table)
-          execute("create table %s (%s) engine=innodb charset=utf8" format (table, decls mkString ", "))
+          createTable(table, decls)
         }
       }
     }
