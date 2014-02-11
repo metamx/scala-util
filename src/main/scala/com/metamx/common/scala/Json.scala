@@ -27,8 +27,10 @@ import java.io.Writer
 import org.codehaus.jackson.JsonEncoding
 import org.codehaus.jackson.JsonGenerator
 
+@deprecated("Replaced by Jackson", "1.5.9")
 object Json extends Json
 
+@deprecated("Replaced by Jackson", "1.5.9")
 trait Json extends jerkson.Json {
 
   def parseOption[A](x: String)(implicit mf: Manifest[A]): Option[A] = parse[A](x).catchOption[Exception]
