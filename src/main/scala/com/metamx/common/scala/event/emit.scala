@@ -4,7 +4,7 @@ import com.metamx.common.scala.Logging._
 import com.metamx.emitter.service.{AlertBuilder, ServiceEmitter}
 import com.metamx.emitter.service.AlertEvent.Severity
 import com.metamx.common.scala.untyped._
-import com.metamx.common.scala.Json
+import com.metamx.common.scala.Jackson
 import com.metamx.common.scala.Predef._
 import scala.compat.Platform
 import org.scala_tools.time.Imports._
@@ -28,7 +28,7 @@ object emit
     data:        Dict
     ) {
     ((if (severity == ANOMALY) log.warn(_,_) else log.error(_,_)): (Throwable, String) => Unit)(
-      e, "Emitting alert: [%s] %s\n%s" format (severity, description, Json.pretty(data))
+      e, "Emitting alert: [%s] %s\n%s" format (severity, description, Jackson.pretty(data))
     )
 
     emitter.emit({
@@ -55,11 +55,10 @@ object emit
     res
   }
 
-  // HACK: Map scala-native types to java types by writing out through jerkson and reading back in through jackson.
+  // HACK: Map scala-native types to java types by writing out through jackson and reading back in through jackson.
   // This will not only normalize scala collections, which untyped.normalizeJava knows how to do, but also things like
-  // Option and Either, which untyped.normalizeJava doesn't and shouldn't know how to do. (It would be nice if we could
-  // wholly extract the scala->java behavior out of jerkson...)
-  def normalizeJavaViaJson(x: Any): Any = _jacksonMapper.readValue(Json.generate(x), classOf[Any])
+  // Option and Either, which untyped.normalizeJava doesn't and shouldn't know how to do.
+  def normalizeJavaViaJson(x: Any): Any = _jacksonMapper.readValue(Jackson.generate(x), classOf[Any])
   private lazy val _jacksonMapper = new ObjectMapper
 
 }

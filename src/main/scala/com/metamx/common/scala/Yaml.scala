@@ -52,6 +52,6 @@ object Yaml {
   // anchors (&*), which is never what we want in our use cases. I can't find anything in
   // DumperOptions to control this, so we simply strip all shared structure by converting to json
   // and back.
-  def stripSharing(x: Any): Any = Json.parse[Any](Json.generate(x))
+  def stripSharing(x: Any): Any = Jackson.normalize(x)
 
 }
