@@ -31,5 +31,12 @@ class JacksonSpec extends Spec
         )
       )
     }
+
+    @Test
+    def testNulls()
+    {
+      val json = """{"hey":[null]}"""
+      Jackson.parse[Dict](json) must be(Map("hey" -> Seq(null)))
+    }
   }
 }
