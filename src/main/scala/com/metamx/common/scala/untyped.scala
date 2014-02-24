@@ -46,7 +46,6 @@ object untyped {
     tryCasts(x mapNull onNull)(
       _.asInstanceOf[Dict],
       _.asInstanceOf[ju.Map[String,Any]].asScala.toMap,
-      kv => Dict(kv.asInstanceOf[(String, Any)]),
       list(_).asInstanceOf[_collection.Seq[(String,Any)]].toMap
     )
   }
