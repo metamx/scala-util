@@ -18,7 +18,7 @@ package com.metamx.common.scala
 
 import com.metamx.common.scala.Predef.EffectOps
 import scala.collection.generic.{CanBuildFrom => CBF}
-import scala.collection.TraversableLike
+import scala.collection.{MapLike, TraversableLike}
 
 package object collection {
 
@@ -37,17 +37,17 @@ package object collection {
     def ifEmpty    (f: => Any): F[X] = { if (xs.isEmpty)  f; xs }
     def ifNonEmpty (f: => Any): F[X] = { if (xs.nonEmpty) f; xs }
 
-    def toMapOfSets[K, V](implicit ev: X <:< (K, V)): Map[K, Set[V]] = xs
-      .toSeq
-      .groupBy(_._1)
-      .mapValues(_.map(_._2).toSet)
-      .toMap
+    def toMapOfSets[K, V](implicit ev: X <:< (K, V)): Map[K, Set[V]] = {
+      for ((k, vs) <- xs.toSeq.groupBy(_._1)) yield {
+        (k, vs.iterator.map(_._2).toSet)
+      }
+    }
 
-    def toMapOfSeqs[K, V](implicit ev: X <:< (K, V)): Map[K, Seq[V]] = xs
-      .toSeq
-      .groupBy(_._1)
-      .mapValues(_.map(_._2))
-      .toMap
+    def toMapOfSeqs[K, V](implicit ev: X <:< (K, V)): Map[K, Seq[V]] = {
+      for ((k, vs) <- xs.toSeq.groupBy(_._1)) yield {
+        (k, vs.map(_._2))
+      }
+    }
 
     def onlyElement = {
       require(xs.size == 1, "expected single element")
@@ -83,6 +83,19 @@ package object collection {
 
   }
   implicit def TraversableLikeOps[X, F[Y] <: TraversableLike[Y, F[Y]]](xs: F[X]) = new TraversableLikeOps[X,F](xs)
+
+  class MapLikeOps[A, +B, +Repr <: MapLike[A, B, Repr] with scala.collection.Map[A, B]](m: MapLike[A, B, Repr]) {
+
+    def strictMapValues[C, That](f: B => C)(implicit bf: CBF[Repr, (A, C), That]): That = {
+      m.map(kv => (kv._1, f(kv._2)))
+    }
+
+    def strictFilterKeys(f: A => Boolean): Repr = {
+      m.filter(kv => f(kv._1))
+    }
+
+  }
+  implicit def MapLikeOps[A, B, Repr <: MapLike[A, B, Repr] with scala.collection.Map[A, B]](m: MapLike[A, B, Repr]) = new MapLikeOps[A, B, Repr](m)
 
   // Mimic TravserableLikeOps for Iterator, which isn't TraversableLike
   class IteratorOps[X](xs: Iterator[X]) {

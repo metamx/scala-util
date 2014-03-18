@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package com.metamx.common.scala.collection
+package com.metamx.common.scala
 
-import com.simple.simplespec.Spec
 import com.metamx.common.scala.Predef._
+import com.metamx.common.scala.collection.implicits._
+import com.metamx.common.scala.collection.untilEmpty
+import com.simple.simplespec.Spec
 import org.junit.Test
 
 class collectionSpec extends Spec {
@@ -101,6 +103,22 @@ class collectionSpec extends Spec {
       evaluating {
         Seq("foo", "bar").onlyElement
       } must throwAn[IllegalArgumentException]
+    }
+
+    @Test def testStrictMapValues() {
+      var n = 0
+      val m = Map("foo" -> 3, "bar" -> 4)
+      val m2 = m.strictMapValues(x => { n += 1; x.toString })
+      n must be(2)
+      m2 must be(Map("foo" -> "3", "bar" -> "4"))
+    }
+
+    @Test def testStrictFilterKeys() {
+      var n = 0
+      val m = Map("foo" -> 3, "bar" -> 4)
+      val m2 = m.strictFilterKeys(x => { n += 1; x == "bar" })
+      n must be(2)
+      m2 must be(Map("bar" -> 4))
     }
 
   }
