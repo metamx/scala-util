@@ -31,7 +31,7 @@ import com.metamx.common.scala.Predef._
 // Property: Intervals.intervals are separated (i.e. disjoint and non-contiguous), ascending, and all nonempty
 
 class Intervals private (self: Vector[Interval])
-extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] {
+extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] with Serializable {
   // (Protected constructors are broken until >=2.9.0.1: https://issues.scala-lang.org/browse/SI-4128)
 
   Intervals.validate(self)
