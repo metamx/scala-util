@@ -16,35 +16,28 @@
 
 package com.metamx.common.scala.collection.concurrent
 
-import com.metamx.common.scala.Predef._
 import com.metamx.common.scala.collection.mutable.ConcurrentMap
-import com.metamx.common.scala.option._
 
+/**
+ * PermanentMaps are like ConcurrentMaps that only support get and getOrElseUpdate, and for which getOrElseUpdate is
+ * guaranteed to execute the "update" function at most once, even if called concurrently from multiple threads.
+ */
 class PermanentMap[K, V]
 {
-  private val lock = new AnyRef
-  private val locks = ConcurrentMap[K, AnyRef]()
+  private val keyLocks = ConcurrentMap[K, AnyRef]() // Want fine-grained locking, per key.
   private val backingMap = ConcurrentMap[K, V]()
 
-  def apply(key: K, makeFn: () => V): V = {
+  def apply(key: K, makeFn: () => V): V = getOrElseUpdate(key, makeFn())
+
+  def get(key: K): Option[V] = backingMap.get(key)
+
+  def getOrElseUpdate(key: K, op: => V): V = {
     backingMap.get(key) match {
       case Some(x) => x
       case None =>
-        val value = lock.synchronized {
-          backingMap.get(key) withEffect {
-            _.ifEmpty {
-              locks.put(key, new AnyRef)
-            }
-          }
-        }
-
-        value match {
-          case Some(x) => x
-          case None => locks.get(key).get.synchronized {
-            makeFn() withEffect {
-              x => backingMap.put(key, x)
-            }
-          }
+        keyLocks.putIfAbsent(key, new AnyRef) // Atomic
+        keyLocks(key).synchronized {
+          backingMap.getOrElseUpdate(key, op) // Non-atomic, needs to be synchronized
         }
     }
   }
