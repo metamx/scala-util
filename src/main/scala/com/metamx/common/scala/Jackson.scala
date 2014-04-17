@@ -1,10 +1,11 @@
 package com.metamx.common.scala
 
+import com.fasterxml.jackson.core.{JsonParser, JsonGenerator}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.metamx.common.scala.Predef._
-import java.io.{OutputStream, Writer}
+import java.io.{Reader, InputStream, OutputStream, Writer}
 
 object Jackson extends Jackson
 
@@ -20,6 +21,18 @@ trait Jackson
     objectMapper.readValue(bs, implicitly[ClassManifest[A]].erasure.asInstanceOf[Class[A]])
   }
 
+  def parse[A: ClassManifest](reader: Reader): A = {
+    objectMapper.readValue(reader, implicitly[ClassManifest[A]].erasure.asInstanceOf[Class[A]])
+  }
+
+  def parse[A: ClassManifest](stream: InputStream): A = {
+    objectMapper.readValue(stream, implicitly[ClassManifest[A]].erasure.asInstanceOf[Class[A]])
+  }
+
+  def parse[A: ClassManifest](jp: JsonParser): A = {
+    objectMapper.readValue(jp, implicitly[ClassManifest[A]].erasure.asInstanceOf[Class[A]])
+  }
+
   def generate[A](a: A): String = objectMapper.writeValueAsString(a)
 
   def generate[A](a: A, writer: Writer) {
@@ -28,6 +41,10 @@ trait Jackson
 
   def generate[A](a: A, stream: OutputStream) {
     objectMapper.writeValue(stream, a)
+  }
+
+  def generate[A](a: A, jg: JsonGenerator) {
+    objectMapper.writeValue(jg, a)
   }
 
   def bytes[A](a: A): Array[Byte] = objectMapper.writeValueAsBytes(a)
