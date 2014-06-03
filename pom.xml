@@ -18,6 +18,7 @@
     <jackson.codehaus.version>1.9.3</jackson.codehaus.version>
     <jackson.fasterxml.version>2.2.2</jackson.fasterxml.version>
     <curator.version>2.3.0</curator.version>
+    <twitters.version>6.16.0</twitters.version>
     <scala.version.major>2.9</scala.version.major>
     <scala.version>${scala.version.major}.1</scala.version>
   </properties>
@@ -63,7 +64,18 @@
     <dependency>
       <groupId>com.metamx</groupId>
       <artifactId>java-util</artifactId>
-      <version>0.21.0</version>
+      <version>0.25.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.metamx</groupId>
+      <artifactId>http-client</artifactId>
+      <version>0.8.2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.netty</groupId>
+          <artifactId>netty</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.metamx</groupId>
@@ -207,16 +219,58 @@
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-framework</artifactId>
       <version>${curator.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.netty</groupId>
+          <artifactId>netty</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-recipes</artifactId>
       <version>${curator.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.netty</groupId>
+          <artifactId>netty</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-x-discovery</artifactId>
       <version>${curator.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.netty</groupId>
+          <artifactId>netty</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Twitter Util, Finagle, Netty -->
+    <dependency>
+      <groupId>com.twitter</groupId>
+      <artifactId>util-core_2.9.2</artifactId>
+      <version>${twitters.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.twitter</groupId>
+      <artifactId>finagle-core_2.9.2</artifactId>
+      <version>${twitters.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.twitter</groupId>
+      <artifactId>finagle-http_2.9.2</artifactId>
+      <version>${twitters.version}</version>
+    </dependency>
+
+    <!-- Netty -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>3.8.0.Final</version>
     </dependency>
 
     <!-- scala -->
