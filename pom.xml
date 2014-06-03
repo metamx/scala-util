@@ -4,13 +4,13 @@
 
   <groupId>com.metamx</groupId>
   <artifactId>scala-util_${scala.version}</artifactId>
-  <version>1.6.5-SNAPSHOT</version>
+  <version>1.7.0</version>
 
   <scm>
     <connection>scm:git:git://github.com/metamx/scala-util.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/metamx/scala-util.git</developerConnection>
     <url>http://github.com/metamx/scala-util</url>
-    <tag>HEAD</tag>
+    <tag>scala-util_2.9.1-1.7.0</tag>
   </scm>
 
   <properties>
