@@ -2,17 +2,15 @@ organization := "com.metamx"
 
 name := "scala-util"
 
-scalaVersion := "2.9.2"
+scalaVersion := "2.9.1"
 
-crossScalaVersions := Seq("2.9.2", "2.10.4")
+crossScalaVersions := Seq("2.9.1", "2.10.4")
 
 lazy val root = project.in(file("."))
 
 net.virtualvoid.sbt.graph.Plugin.graphSettings
 
 resolvers ++= Seq(
-  "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases/",
-  "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/",
   "Metamarkets Releases" at "https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local/"
 )
 
@@ -20,8 +18,13 @@ publishMavenStyle := true
 
 publishTo := Some("pub-libs" at "https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local")
 
+parallelExecution in Test := false
+
+testOptions += Tests.Argument(TestFrameworks.JUnit, "-Duser.timezone=UTC")
+
 releaseSettings
 
+// When updating Jackson, watch out for: https://github.com/FasterXML/jackson-module-scala/issues/148
 val jacksonFasterxmlVersion = "2.2.2"
 val curatorVersion = "2.3.0"
 val twittersVersion = "6.16.0"
@@ -49,10 +52,6 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.codahale" % "jerkson_2.9.1" % "0.5.0"
-)
-
-libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % jacksonFasterxmlVersion,
   "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonFasterxmlVersion,
   "com.fasterxml.jackson.core" % "jackson-databind" % jacksonFasterxmlVersion,
@@ -74,16 +73,26 @@ libraryDependencies ++= Seq(
   "org.apache.curator" % "curator-x-discovery" % curatorVersion exclude("org.jboss.netty", "netty")
 )
 
+def TwitterCross = CrossVersion.binaryMapped {
+  case "2.9.1" => "2.9.2"
+  case x => x
+}
+
 libraryDependencies ++= Seq(
-  "com.twitter" %% "util-core" % twittersVersion,
-  "com.twitter" %% "finagle-core" % twittersVersion,
-  "com.twitter" %% "finagle-http" % twittersVersion
+  "com.twitter" % "util-core" % twittersVersion cross TwitterCross,
+  "com.twitter" % "finagle-core" % twittersVersion cross TwitterCross,
+  "com.twitter" % "finagle-http" % twittersVersion cross TwitterCross
 )
 
 libraryDependencies ++= Seq(
   "io.netty" % "netty" % "3.8.0.Final"
 )
 
+libraryDependencies <+= scalaVersion {
+  case "2.9.1" => "com.simple" % "simplespec_2.9.2" % "0.7.0" % "test"
+  case "2.10.4" => "com.simple" % "simplespec_2.10.2" % "0.8.4" % "test"
+}
+
 libraryDependencies ++= Seq(
-  "com.simple" % "simplespec_2.9.2" % simplespecVersion % "test"
+  "com.novocode" % "junit-interface" % "0.10" % "test"
 )
