@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.metamx.common.scala.Predef._
-import java.io.{Reader, InputStream, OutputStream, Writer}
+import java.io.{FilterOutputStream, FilterWriter, OutputStream, Writer, InputStream, Reader}
 
 object Jackson extends Jackson
 
@@ -69,3 +69,7 @@ trait Jackson
     }
   }
 }
+
+// Jackson.generate and Jackson.pretty automatically close their JsonGenerator. Use these to prevent that.
+class NoCloseWriter       (x: Writer)       extends FilterWriter(x)       { override def close {} }
+class NoCloseOutputStream (x: OutputStream) extends FilterOutputStream(x) { override def close {} }
