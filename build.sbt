@@ -4,6 +4,8 @@ name := "scala-util"
 
 scalaVersion := "2.9.2"
 
+crossScalaVersions := Seq("2.9.2", "2.10.4")
+
 lazy val root = project.in(file("."))
 
 net.virtualvoid.sbt.graph.Plugin.graphSettings
