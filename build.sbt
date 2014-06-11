@@ -31,46 +31,47 @@ val twittersVersion = "6.16.0"
 val simplespecVersion = "0.7.0"
 
 libraryDependencies ++= Seq(
-  "org.eintr.loglady" %% "loglady" % "1.1.0"
+  "org.eintr.loglady" %% "loglady" % "1.1.0" force()
 )
 
 libraryDependencies ++= Seq(
-  "com.metamx" % "java-util" % "0.25.1",
-  "com.metamx" % "http-client" % "0.8.2" exclude("org.jboss.netty", "netty"),
-  "com.metamx" % "emitter" % "0.2.4",
-  "com.metamx" % "server-metrics" % "0.0.4"
+  "com.metamx" % "java-util" % "0.25.1" force(),
+  "com.metamx" % "http-client" % "0.8.2" exclude("org.jboss.netty", "netty") force(),
+  "com.metamx" % "emitter" % "0.2.4" force(),
+  "com.metamx" % "server-metrics" % "0.0.4" force()
 )
 
 libraryDependencies ++= Seq(
-  "commons-lang" % "commons-lang" % "2.6",
-  "joda-time" % "joda-time" % "2.1",
-  "org.joda" % "joda-convert" % "1.6",
-  "org.scala-tools.time" %% "time" % "0.6-mmx1",
-  "org.skife.config" % "config-magic" % "0.9",
-  "com.google.guava" % "guava" % "14.0.1",
-  "org.yaml" % "snakeyaml" % "1.9"
+  "org.slf4j" % "slf4j-api" % "1.7.2" force() force(),
+  "commons-lang" % "commons-lang" % "2.6" force(),
+  "joda-time" % "joda-time" % "2.1" force(),
+  "org.joda" % "joda-convert" % "1.6" force(),
+  "org.scala-tools.time" %% "time" % "0.6-mmx1" force(),
+  "org.skife.config" % "config-magic" % "0.9" force(),
+  "com.google.guava" % "guava" % "14.0.1" force(),
+  "org.yaml" % "snakeyaml" % "1.9" force()
 )
 
 libraryDependencies ++= Seq(
-  "com.fasterxml.jackson.core" % "jackson-core" % jacksonFasterxmlVersion,
-  "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonFasterxmlVersion,
-  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonFasterxmlVersion,
-  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-smile" % jacksonFasterxmlVersion,
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonFasterxmlVersion,
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonFasterxmlVersion
+  "com.fasterxml.jackson.core" % "jackson-core" % jacksonFasterxmlVersion force(),
+  "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonFasterxmlVersion force(),
+  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonFasterxmlVersion force(),
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-smile" % jacksonFasterxmlVersion force(),
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonFasterxmlVersion force(),
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonFasterxmlVersion force()
 )
 
 libraryDependencies ++= Seq(
-  "org.jdbi" % "jdbi" % "2.27",
-  "mysql" % "mysql-connector-java" % "5.1.18",
-  "com.h2database" % "h2" % "1.3.158",
-  "c3p0" % "c3p0" % "0.9.1.2"
+  "org.jdbi" % "jdbi" % "2.27" force(),
+  "mysql" % "mysql-connector-java" % "5.1.18" force(),
+  "com.h2database" % "h2" % "1.3.158" force(),
+  "c3p0" % "c3p0" % "0.9.1.2" force()
 )
 
 libraryDependencies ++= Seq(
-  "org.apache.curator" % "curator-framework" % curatorVersion exclude("org.jboss.netty", "netty"),
-  "org.apache.curator" % "curator-recipes" % curatorVersion exclude("org.jboss.netty", "netty"),
-  "org.apache.curator" % "curator-x-discovery" % curatorVersion exclude("org.jboss.netty", "netty")
+  "org.apache.curator" % "curator-framework" % curatorVersion exclude("org.jboss.netty", "netty") force(),
+  "org.apache.curator" % "curator-recipes" % curatorVersion exclude("org.jboss.netty", "netty") force(),
+  "org.apache.curator" % "curator-x-discovery" % curatorVersion exclude("org.jboss.netty", "netty") force()
 )
 
 def TwitterCross = CrossVersion.binaryMapped {
@@ -79,27 +80,27 @@ def TwitterCross = CrossVersion.binaryMapped {
 }
 
 libraryDependencies ++= Seq(
-  "com.twitter" % "util-core" % twittersVersion cross TwitterCross,
-  "com.twitter" % "finagle-core" % twittersVersion cross TwitterCross,
-  "com.twitter" % "finagle-http" % twittersVersion cross TwitterCross
+  "com.twitter" % "util-core" % twittersVersion cross TwitterCross force(),
+  "com.twitter" % "finagle-core" % twittersVersion cross TwitterCross force(),
+  "com.twitter" % "finagle-http" % twittersVersion cross TwitterCross force()
 )
 
 libraryDependencies ++= Seq(
-  "io.netty" % "netty" % "3.8.0.Final"
+  "io.netty" % "netty" % "3.8.0.Final" force()
 )
 
 libraryDependencies <++= scalaVersion {
   case "2.9.1" => Seq(
-    "junit" % "junit" % "4.10" % "test",
+    "junit" % "junit" % "4.10" % "test" force(),
     "com.simple" % "simplespec_2.9.2" % "0.7.0" % "test"
   )
   case "2.10.4" => Seq(
-    "junit" % "junit" % "4.11" % "test",
-    "com.simple" % "simplespec_2.10.2" % "0.8.4" % "test" exclude("org.mockito", "mockito-all"),
-    "org.mockito" % "mockito-core" % "1.9.5" % "test"
+    "junit" % "junit" % "4.11" % "test" force(),
+    "com.simple" % "simplespec_2.10.2" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force(),
+    "org.mockito" % "mockito-core" % "1.9.5" % "test" force()
   )
 }
 
 libraryDependencies ++= Seq(
-  "com.novocode" % "junit-interface" % "0.11-RC1" % "test" exclude("junit", "junit")
+  "com.novocode" % "junit-interface" % "0.11-RC1" % "test" exclude("junit", "junit") force()
 )
