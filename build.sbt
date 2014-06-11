@@ -88,11 +88,18 @@ libraryDependencies ++= Seq(
   "io.netty" % "netty" % "3.8.0.Final"
 )
 
-libraryDependencies <+= scalaVersion {
-  case "2.9.1" => "com.simple" % "simplespec_2.9.2" % "0.7.0" % "test"
-  case "2.10.4" => "com.simple" % "simplespec_2.10.2" % "0.8.4" % "test"
+libraryDependencies <++= scalaVersion {
+  case "2.9.1" => Seq(
+    "junit" % "junit" % "4.10" % "test",
+    "com.simple" % "simplespec_2.9.2" % "0.7.0" % "test"
+  )
+  case "2.10.4" => Seq(
+    "junit" % "junit" % "4.11" % "test",
+    "com.simple" % "simplespec_2.10.2" % "0.8.4" % "test" exclude("org.mockito", "mockito-all"),
+    "org.mockito" % "mockito-core" % "1.9.5" % "test"
+  )
 }
 
 libraryDependencies ++= Seq(
-  "com.novocode" % "junit-interface" % "0.10" % "test"
+  "com.novocode" % "junit-interface" % "0.11-RC1" % "test" exclude("junit", "junit")
 )
