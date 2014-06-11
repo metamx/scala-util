@@ -43,9 +43,9 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "commons-lang" % "commons-lang" % "2.6",
-  "joda-time" % "joda-time" % "1.6",
+  "joda-time" % "joda-time" % "2.1",
   "org.joda" % "joda-convert" % "1.6",
-  "org.scala-tools.time" % "time_2.8.1" % "0.6.mmx0",
+  "org.scala-tools.time" %% "time" % "0.6-mmx1",
   "org.skife.config" % "config-magic" % "0.9",
   "com.google.guava" % "guava" % "14.0.1",
   "org.yaml" % "snakeyaml" % "1.9"
