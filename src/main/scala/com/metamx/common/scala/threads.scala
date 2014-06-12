@@ -1,6 +1,5 @@
-package com.metamx.common
+package com.metamx.common.scala
 
-import com.metamx.common.scala.Logging
 import com.metamx.common.scala.concurrent._
 import org.scala_tools.time.TypeImports._
 
