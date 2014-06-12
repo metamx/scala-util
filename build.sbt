@@ -26,7 +26,7 @@ releaseSettings
 
 // When updating Jackson, watch out for: https://github.com/FasterXML/jackson-module-scala/issues/148
 val jacksonFasterxmlVersion = "2.2.2"
-val curatorVersion = "2.3.0"
+val curatorVersion = "2.4.0"
 val twittersVersion = "6.16.0"
 val simplespecVersion = "0.7.0"
 
@@ -48,8 +48,8 @@ libraryDependencies ++= Seq(
   "org.joda" % "joda-convert" % "1.6" force(),
   "org.scala-tools.time" %% "time" % "0.6-mmx1" force(),
   "org.skife.config" % "config-magic" % "0.9" force(),
-  "com.google.guava" % "guava" % "14.0.1" force(),
-  "org.yaml" % "snakeyaml" % "1.9" force()
+  "com.google.guava" % "guava" % "15.0" force(),
+  "org.yaml" % "snakeyaml" % "1.11" force()
 )
 
 libraryDependencies ++= Seq(
@@ -86,7 +86,7 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.netty" % "netty" % "3.8.0.Final" force()
+  "io.netty" % "netty" % "3.9.0.Final" force()
 )
 
 libraryDependencies <++= scalaVersion {
