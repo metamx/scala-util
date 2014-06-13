@@ -1,11 +1,11 @@
 package com.metamx.common.scala
 
-import com.fasterxml.jackson.core.{JsonParser, JsonGenerator}
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
+import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.metamx.common.scala.Predef._
-import java.io.{FilterOutputStream, FilterWriter, OutputStream, Writer, InputStream, Reader}
+import java.io.{FilterOutputStream, FilterWriter, InputStream, OutputStream, Reader, Writer}
 
 object Jackson extends Jackson
 
@@ -66,6 +66,7 @@ trait Jackson
       jm =>
         jm.registerModule(new JodaModule)
         jm.registerModule(DefaultScalaModule)
+        jm.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
     }
   }
 }
