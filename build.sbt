@@ -27,6 +27,7 @@ releaseSettings
 // When updating Jackson, watch out for: https://github.com/FasterXML/jackson-module-scala/issues/148
 val jacksonFasterxmlVersion = "2.2.2"
 val curatorVersion = "2.4.0"
+val zookeeperVersion = "3.4.5"
 val twittersVersion = "6.16.0"
 val simplespecVersion = "0.7.0"
 
@@ -42,7 +43,9 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.slf4j" % "slf4j-api" % "1.7.2" force() force(),
+  "org.slf4j" % "slf4j-api" % "1.7.2" force(),
+  "org.slf4j" % "slf4j-log4j12" % "1.7.2" force(),
+  "log4j" % "log4j" % "1.2.17" force(),
   "commons-lang" % "commons-lang" % "2.6" force(),
   "joda-time" % "joda-time" % "2.1" force(),
   "org.joda" % "joda-convert" % "1.6" force(),
@@ -69,6 +72,7 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
+  "org.apache.zookeeper" % "zookeeper" % zookeeperVersion exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-log4j12") force(),
   "org.apache.curator" % "curator-framework" % curatorVersion exclude("org.jboss.netty", "netty") force(),
   "org.apache.curator" % "curator-recipes" % curatorVersion exclude("org.jboss.netty", "netty") force(),
   "org.apache.curator" % "curator-x-discovery" % curatorVersion exclude("org.jboss.netty", "netty") force()
@@ -88,6 +92,10 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "io.netty" % "netty" % "3.9.0.Final" force()
 )
+
+//
+// Test stuff.
+//
 
 libraryDependencies <++= scalaVersion {
   case "2.9.1" => Seq(
