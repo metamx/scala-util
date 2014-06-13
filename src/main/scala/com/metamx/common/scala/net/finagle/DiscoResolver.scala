@@ -3,18 +3,19 @@ package com.metamx.common.scala.net.finagle
 import com.metamx.common.lifecycle.Lifecycle
 import com.metamx.common.scala.Logging
 import com.metamx.common.scala.net.curator.Disco
-import com.twitter.finagle.Addr
-import com.twitter.finagle.Resolver
-import com.twitter.util.Closable
-import com.twitter.util.Future
-import com.twitter.util.Time
-import com.twitter.util.Var
-import java.net.{SocketAddress, InetSocketAddress}
+import com.twitter.finagle.{Addr, Resolver}
+import com.twitter.util.{Closable, Future, Time, Var}
+import java.net.{InetSocketAddress, SocketAddress}
 import org.apache.curator.framework.CuratorFramework
 import org.apache.curator.framework.state.ConnectionState
 import org.apache.curator.x.discovery.details.ServiceCacheListener
 import scala.collection.JavaConverters._
 
+/**
+ * Bridges Finagle with Curator-based service discovery.
+ *
+ * @param disco Service discovery environment
+ */
 class DiscoResolver(disco: Disco) extends Resolver with Logging
 {
   val scheme = "disco"
