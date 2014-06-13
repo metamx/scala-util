@@ -2,7 +2,6 @@ package com.metamx.common.scala.net.finagle
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.metamx.common.scala.Logging
-import com.metamx.common.scala.Predef._
 import com.twitter.finagle.util.{DefaultTimer, InetSocketAddressUtil}
 import com.twitter.finagle.{Addr, Resolver}
 import com.twitter.util.{Closable, Future, FuturePool, Timer, Var, Duration => TwitterDuration}
@@ -48,10 +47,7 @@ class InetAddressResolver(ttl: TwitterDuration, futurePool: FuturePool, timer: T
       }
   }
 
-  private def resolveString(arg: String) = Addr.Bound(InetSocketAddressUtil.parseHosts(arg): _*) withEffect {
-    stuffs =>
-      println("New stuffs: %s" format stuffs)
-  }
+  private def resolveString(arg: String) = Addr.Bound(InetSocketAddressUtil.parseHosts(arg): _*)
 }
 
 object InetAddressResolver
