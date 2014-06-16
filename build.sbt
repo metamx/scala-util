@@ -37,15 +37,13 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "com.metamx" % "java-util" % "0.25.1" force(),
-  "com.metamx" % "http-client" % "0.9.6" force(),
+  "com.metamx" % "http-client" % "0.9.6" exclude("log4j", "log4j") force(),
   "com.metamx" % "emitter" % "0.2.12" force(),
   "com.metamx" % "server-metrics" % "0.0.9" force()
 )
 
 libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-api" % "1.7.2" force(),
-  "org.slf4j" % "slf4j-log4j12" % "1.7.2" force(),
-  "log4j" % "log4j" % "1.2.17" force(),
   "commons-lang" % "commons-lang" % "2.6" force(),
   "joda-time" % "joda-time" % "2.1" force(),
   "org.joda" % "joda-convert" % "1.6" force(),
@@ -96,6 +94,10 @@ libraryDependencies ++= Seq(
 //
 // Test stuff.
 //
+
+libraryDependencies ++= Seq(
+  "org.slf4j" % "slf4j-simple" % "1.7.2" % "test" force()
+)
 
 libraryDependencies <++= scalaVersion {
   case "2.9.1" => Seq(
