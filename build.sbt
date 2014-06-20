@@ -70,7 +70,7 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.apache.zookeeper" % "zookeeper" % zookeeperVersion exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-log4j12") force(),
+  "org.apache.zookeeper" % "zookeeper" % zookeeperVersion exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-log4j12") exclude("org.jboss.netty", "netty") force(),
   "org.apache.curator" % "curator-framework" % curatorVersion exclude("org.jboss.netty", "netty") force(),
   "org.apache.curator" % "curator-recipes" % curatorVersion exclude("org.jboss.netty", "netty") force(),
   "org.apache.curator" % "curator-x-discovery" % curatorVersion exclude("org.jboss.netty", "netty") force()
