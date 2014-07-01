@@ -1,6 +1,6 @@
 package com.metamx.common.scala
 
-import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
+import com.fasterxml.jackson.core.{JsonFactory, JsonGenerator, JsonParser}
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -61,8 +61,10 @@ trait Jackson
 
   def normalize[A : ClassManifest](a: A) = parse[A](generate(a))
 
-  def newObjectMapper() = {
-    new ObjectMapper withEffect {
+  def newObjectMapper(): ObjectMapper = newObjectMapper(null)
+
+  def newObjectMapper(jsonFactory: JsonFactory): ObjectMapper = {
+    new ObjectMapper(jsonFactory) withEffect {
       jm =>
         jm.registerModule(new JodaModule)
         jm.registerModule(DefaultScalaModule)
