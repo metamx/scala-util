@@ -93,6 +93,7 @@ class CollectionTest extends Matchers {
 
   @Test def testOnlyElement() {
     Seq("foo").onlyElement must be("foo")
+    Seq("foo").iterator.onlyElement must be("foo")
 
     evaluating {
       Seq().onlyElement
@@ -100,6 +101,10 @@ class CollectionTest extends Matchers {
 
     evaluating {
       Seq("foo", "bar").onlyElement
+    } must throwAn[IllegalArgumentException]
+
+    evaluating {
+      Seq("foo", "bar").iterator.onlyElement
     } must throwAn[IllegalArgumentException]
   }
 

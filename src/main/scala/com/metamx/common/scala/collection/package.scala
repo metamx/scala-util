@@ -49,9 +49,16 @@ package object collection {
       }
     }
 
-    def onlyElement = {
-      require(xs.size == 1, "expected single element")
-      xs.toSeq.head
+    def onlyElement: X = {
+      val iter = xs.toIterator
+      if (!iter.hasNext) {
+        throw new IllegalArgumentException("expected single element")
+      }
+      val elt = iter.next()
+      if (iter.hasNext) {
+        throw new IllegalArgumentException("expected single element")
+      }
+      elt
     }
   }
   implicit def TraversableOnceOps[X, F[Y] <: TraversableOnce[Y]](xs: F[X]) = new TraversableOnceOps[X,F](xs)
