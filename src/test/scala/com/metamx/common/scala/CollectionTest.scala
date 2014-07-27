@@ -124,4 +124,18 @@ class CollectionTest extends Matchers {
     m2 must be(Map("bar" -> 4))
   }
 
+  @Test def testChunked() {
+    val xs = Seq(1, 2, 3, 4, 5)
+    val grouped = xs.grouped(2)
+    val chunked = xs.chunked(0)((a, _) => a + 1)(_ <= 2)
+    chunked.toSeq must be(grouped.toSeq)
+  }
+
+  @Test def testChunkedFailure() {
+    val xs = Seq(1, 2, 3, 4, 5)
+    evaluating {
+      xs.chunked(0)((a, _) => a + 3)(_ <= 2)
+    } must throwAn[IllegalArgumentException]("""single element refuses to chunk""")
+  }
+
 }

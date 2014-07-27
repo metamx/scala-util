@@ -88,6 +88,36 @@ package object collection {
       xs.takeWhile { x => last.x = x; !p(x) } ++ Iterator.fill(1) { last.x } // (Defer eval of last.x)
     }
 
+    /**
+     * Chunk (un-flatten) objects greedily using an accumulator. When the continue-chunk condition returns false, the
+     * element for which it returned false will become the start of a new chunk. It will then be re-evaluated with a
+     * new accumulator. If this re-evaluation fails to return true, an exception will be thrown.
+     *
+     * Example: xs.grouped(2) == xs.chunked(0)((a, _) => a + 1)(_ <= 2)
+     *
+     * @param z zero for the accumlator type
+     * @param accumulate accumulation function
+     * @param continueChunk continue-chunk condition
+     * @tparam Acc accumulator type
+     * @return chunked objects
+     */
+    def chunked[Acc](z: Acc)(accumulate: (Acc, X) => Acc)(continueChunk: Acc => Boolean): Iterator[F[X]] = {
+      var acc = z
+      val (chunk, rest) = xs span {
+        x =>
+          acc = accumulate(acc, x)
+          continueChunk(acc)
+      }
+      if (chunk.isEmpty) {
+        if (rest.nonEmpty) {
+          throw new IllegalArgumentException("single element refuses to chunk")
+        } else {
+          Iterator.empty
+        }
+      } else {
+        Iterator(chunk) ++ new TraversableLikeOps(rest).chunked(z)(accumulate)(continueChunk)
+      }
+    }
   }
   implicit def TraversableLikeOps[X, F[Y] <: TraversableLike[Y, F[Y]]](xs: F[X]) = new TraversableLikeOps[X,F](xs)
 
