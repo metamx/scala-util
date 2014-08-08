@@ -37,7 +37,9 @@ object emit
           (dict(normalizeJavaViaJson(data)) ++
             Option(e).map(
               e => Dict(
-                "exception" -> Throwables.getStackTraceAsString(e)
+                "exceptionType" -> e.getClass.getName,
+                "exceptionMessage" -> e.getMessage,
+                "exceptionStackTrace" -> Throwables.getStackTraceAsString(e).split('\n').map(_.replace("\t", "  ")).toSeq
               )
             ).getOrElse(Dict())) foreach {
             case (k, v) => x.addData(k, v)
