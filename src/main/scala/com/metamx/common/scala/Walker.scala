@@ -1,5 +1,6 @@
 package com.metamx.common.scala
 
+import java.util.concurrent.atomic.AtomicBoolean
 import scala.collection.GenTraversableOnce
 
 /**
@@ -68,10 +69,29 @@ trait Walker[+A]
 
 object Walker
 {
-  def empty[A] = Walker[A](Nil)
+  def empty[A]: Walker[A] = Walker[A](Nil)
 
   def apply[A](xs: Iterable[A]): Walker[A] = new Walker[A] {
     override def foreach(f: A => Unit) = xs foreach f
+  }
+
+  def apply[A](foreachFn: (A => Unit) => Unit): Walker[A] = new Walker[A] {
+    override def foreach(f: A => Unit) {
+      foreachFn(f)
+    }
+  }
+
+  def once[A](foreachFn: (A => Unit) => Unit): Walker[A] = new Walker[A] {
+    val finished = new AtomicBoolean(false)
+
+    override def foreach(f: A => Unit) {
+      val wasFinished = finished.getAndSet(true)
+      if (wasFinished) {
+        throw new IllegalStateException("Cannot walk more than once")
+      } else {
+        foreachFn(f)
+      }
+    }
   }
 
   class WalkerTuple2Ops[A, B](walker: Walker[(A, B)])
@@ -82,5 +102,6 @@ object Walker
       builder.result()
     }
   }
+
   implicit def WalkerTuple2Ops[A, B](walker: Walker[(A, B)]) = new WalkerTuple2Ops(walker)
 }

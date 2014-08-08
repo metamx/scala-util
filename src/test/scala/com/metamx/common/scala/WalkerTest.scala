@@ -77,4 +77,23 @@ class WalkerTest extends Matchers
     walker.toSet must be(Set(1, 2, 3))
     walker.toSet must be(Set(1, 2, 3))
   }
+
+  @Test
+  def testFromForeachFunction()
+  {
+    val walker = Walker((f: Int => Unit) => Seq(1, 2, 3).foreach(f))
+    walker.toList must be(List(1, 2, 3))
+    walker.toList must be(List(1, 2, 3))
+  }
+
+  @Test
+  def testFromForeachFunctionOnce()
+  {
+    val walker = Walker.once((f: Int => Unit) => Seq(1, 2, 3).foreach(f))
+    walker.toList must be(List(1, 2, 3))
+    evaluating {
+      walker.toList
+    } must throwAn[IllegalStateException]("""Cannot walk more than once""")
+  }
+
 }
