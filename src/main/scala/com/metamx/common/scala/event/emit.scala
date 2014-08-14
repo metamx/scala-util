@@ -39,7 +39,7 @@ object emit
               e => Dict(
                 "exceptionType" -> e.getClass.getName,
                 "exceptionMessage" -> e.getMessage,
-                "exceptionStackTrace" -> Throwables.getStackTraceAsString(e).split('\n').map(_.replace("\t", "  ")).toSeq
+                "exceptionStackTrace" -> Throwables.getStackTraceAsString(e)
               )
             ).getOrElse(Dict())) foreach {
             case (k, v) => x.addData(k, v)
