@@ -132,9 +132,9 @@ class AlertAggregatorTest extends Matchers with Logging
             "exceptionMessage" -> "boo!",
             "exceptionStackTrace" ->
               Seq(
-                "com.metamx.common.scala.event.AlertAggregatorTest$TestException: boo!",
-                "  at com.twitter.util.NoStacktrace(Unknown Source)"
-              ),
+                "com.metamx.common.scala.event.AlertAggregatorTest$TestException: boo!\n",
+                "\tat com.twitter.util.NoStacktrace(Unknown Source)\n"
+              ).mkString,
             "alertCount" -> 2
           )
         )
