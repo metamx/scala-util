@@ -36,7 +36,7 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.metamx" % "java-util" % "0.25.1" force(),
+  "com.metamx" % "java-util" % "0.26.6" force(),
   "com.metamx" % "http-client" % "0.9.6" exclude("log4j", "log4j") force(),
   "com.metamx" % "emitter" % "0.2.12" force(),
   "com.metamx" % "server-metrics" % "0.0.9" force()
@@ -49,7 +49,7 @@ libraryDependencies ++= Seq(
   "org.joda" % "joda-convert" % "1.6" force(),
   "org.scala-tools.time" %% "time" % "0.6-mmx1" force(),
   "org.skife.config" % "config-magic" % "0.9" force(),
-  "com.google.guava" % "guava" % "15.0" force(),
+  "com.google.guava" % "guava" % "16.0.1" force(),
   "org.yaml" % "snakeyaml" % "1.11" force()
 )
 
