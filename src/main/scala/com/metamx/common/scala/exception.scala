@@ -16,13 +16,30 @@
 
 package com.metamx.common.scala
 
-import com.metamx.common.scala.option._
 import scala.reflect.{ClassManifest => CM}
 import scala.util.control.Exception.{catching => _catching}
 
 // TODO Tests
 
 object exception {
+
+  /**
+   * Returns a lazily-computed stream of causes for a particular Throwable. The provided Throwable will be returned
+   * first, followed by its cause chain, if any.
+   */
+  def causes(e: Throwable): Stream[Throwable] = Stream.cons(e, Option(e.getCause) map causes getOrElse Stream.empty)
+
+  /**
+   * Checks if a Throwable, or any Throwable in its cause chain, matches a partial predicate.
+   */
+  def causeMatches(e: Throwable)(f: PartialFunction[Throwable, Boolean]) = causes(e).collect(f).contains(true)
+
+  /**
+   * Checks if a Throwable, or any Throwable in its cause chain, is a particular type.
+   */
+  def causedBy[E <: Throwable: CM](e: Throwable) = causeMatches(e) {
+    case x if classManifest[E].erasure.isAssignableFrom(x.getClass) => true
+  }
 
   def raises[E <: Throwable] = new {
     def apply[X](x: => X)(implicit cm: CM[E], ev: NotNothing[E]): Boolean =
