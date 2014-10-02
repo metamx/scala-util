@@ -30,7 +30,7 @@ object CuratorUtils extends Logging
    * create the same path use identical mode, otherwise path might be created with different mode
    * than asked by client.
    */
-  private def createRecursiveIfNotExists(
+  def createRecursiveIfNotExists(
     curator: CuratorFramework,
     path: String,
     createMode: Option[CreateMode] = None
