@@ -7,6 +7,10 @@ import org.apache.zookeeper.KeeperException.NodeExistsException
 
 object CuratorUtils extends Logging
 {
+  /**
+   * Creates or updates data in the given path. This operation is not atomic, so you need proper synchronization
+   * if multiple clients are going to modify the same path.
+   */
   def createOrUpdate(
     curator: CuratorFramework,
     path: String,
@@ -21,15 +25,16 @@ object CuratorUtils extends Logging
     }
   }
 
-  def createRecursiveIfNotExists(curator: CuratorFramework, path: String) {
-    createRecursiveIfNotExists(curator, path, None)
-  }
-
-  def createRecursiveIfNotExists(curator: CuratorFramework, path: String, createMode: CreateMode) {
-    createRecursiveIfNotExists(curator, path, Some(createMode))
-  }
-
-  private def createRecursiveIfNotExists(curator: CuratorFramework, path: String, createMode: Option[CreateMode]) {
+  /**
+   * Recursively creates path if it doesn't exist. This operation is atomic if all clients trying to
+   * create the same path use identical mode, otherwise path might be created with different mode
+   * than asked by client.
+   */
+  private def createRecursiveIfNotExists(
+    curator: CuratorFramework,
+    path: String,
+    createMode: Option[CreateMode] = None
+  ) {
     try {
       if (curator.checkExists().forPath(path) == null) {
         val builder = curator.create().creatingParentsIfNeeded()
