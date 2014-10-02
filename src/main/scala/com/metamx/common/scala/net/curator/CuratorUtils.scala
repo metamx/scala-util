@@ -33,16 +33,15 @@ object CuratorUtils extends Logging
   def createRecursiveIfNotExists(
     curator: CuratorFramework,
     path: String,
-    createMode: Option[CreateMode] = None
+    createMode: CreateMode = CreateMode.PERSISTENT
   ) {
     try {
       if (curator.checkExists().forPath(path) == null) {
-        val builder = curator.create().creatingParentsIfNeeded()
-        val builderWithMode = createMode match {
-          case Some(mode) => builder.withMode(mode)
-          case None => builder
-        }
-        builderWithMode.forPath(path)
+        val builder = curator
+          .create()
+          .creatingParentsIfNeeded()
+          .withMode(createMode)
+          .forPath(path)
       }
     } catch {
       case e: NodeExistsException => log.info("Concurrent path creation: %s".format(path))
