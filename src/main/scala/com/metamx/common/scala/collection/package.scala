@@ -60,6 +60,22 @@ package object collection {
       }
       elt
     }
+
+    def maxByOpt[Z](f: X => Z)(implicit cmp: Ordering[Z]): Option[X] = {
+      if (xs.isEmpty) {
+        None
+      } else {
+        Some(xs.maxBy(f)(cmp))
+      }
+    }
+
+    def minByOpt[Z](f: X => Z)(implicit cmp: Ordering[Z]): Option[X] = {
+      if (xs.isEmpty) {
+        None
+      } else {
+        Some(xs.minBy(f)(cmp))
+      }
+    }
   }
   implicit def TraversableOnceOps[X, F[Y] <: TraversableOnce[Y]](xs: F[X]) = new TraversableOnceOps[X,F](xs)
 
