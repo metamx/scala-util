@@ -44,6 +44,22 @@ extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] with Seria
 
   def overlaps(dt: DateTime) = self.exists(_ contains dt)
 
+  def earliest(_duration: Duration) = new Intervals(Vector() ++ new ListBuffer[Interval].withEffect { results =>
+    val breaks = new Breaks; import breaks.{breakable, break}
+    var duration = _duration
+    breakable {
+      for (i <- self.iterator) {
+        if (duration.millis == 0) {
+          break
+        } else {
+          results += new Interval(i.start, Seq(i.end, i.start + duration).min) withEffect { result =>
+            duration -= result.duration
+          }
+        }
+      }
+    }
+  })
+
   def latest(_duration: Duration) = new Intervals(Vector() ++ new ListBuffer[Interval].withEffect { results =>
     val breaks = new Breaks; import breaks.{breakable, break}
     var duration = _duration

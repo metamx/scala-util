@@ -137,6 +137,30 @@ class IntervalsTest extends Matchers {
     Intervals(I(0, 2), I(3, 4)).overlaps(D(3)) must be(true)
   }
 
+  @Test def earliest {
+    Seq(
+
+      (Seq((0,10)), 0)  -> Seq(),
+      (Seq((0,10)), 3)  -> Seq((0,3)),
+      (Seq((0,10)), 10) -> Seq((0,10)),
+      (Seq((0,10)), 13) -> Seq((0,10)),
+
+      (Seq((2,4), (6,7), (8,10)), 0)  -> Seq(),
+      (Seq((2,4), (6,7), (8,10)), 1)  -> Seq((2,3)),
+      (Seq((2,4), (6,7), (8,10)), 2)  -> Seq((2,4)),
+      (Seq((2,4), (6,7), (8,10)), 3)  -> Seq((2,4), (6,7)),
+      (Seq((2,4), (6,7), (8,10)), 4)  -> Seq((2,4), (6,7), (8,9)),
+      (Seq((2,4), (6,7), (8,10)), 5)  -> Seq((2,4), (6,7), (8,10)),
+      (Seq((2,4), (6,7), (8,10)), 6)  -> Seq((2,4), (6,7), (8,10)),
+      (Seq((2,4), (6,7), (8,10)), 10) -> Seq((2,4), (6,7), (8,10)),
+
+      (Seq(), 3) -> Seq()
+
+    ) foreach { contextually { case ((from, duration), to) =>
+      Intervals(from map I).earliest(new Duration(duration)) must be(Intervals(to map I))
+    }}
+  }
+
   @Test def latest {
     Seq(
 
