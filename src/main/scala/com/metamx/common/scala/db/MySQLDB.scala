@@ -52,12 +52,15 @@ class MySQLDB(config: DBConfig) extends DB(config) {
       // MySQL ER_QUERY_INTERRUPTED "Query execution was interrupted" [ETL-153]
       case e: java.sql.SQLException                     if e.getErrorCode == 1317  => true
 
+      // MySQL ER_LOCK_WAIT_TIMEOUT "Lock wait timeout exceeded; try restarting transaction"
+      case e: java.sql.SQLException                     if e.getErrorCode == 1205  => true
+
       // Unwrap nested exceptions from jdbc and jdbi
       case e: java.sql.SQLException                     if isTransient(e.getCause) => true
       case e: org.skife.jdbi.v2.exceptions.DBIException if isTransient(e.getCause) => true
 
       // Nothing else
-      case e                                                                       => false
+      case _                                                                       => false
 
     }
 
