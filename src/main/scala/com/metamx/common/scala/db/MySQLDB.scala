@@ -60,7 +60,7 @@ class MySQLDB(config: DBConfig) extends DB(config) {
       case e: org.skife.jdbi.v2.exceptions.DBIException if isTransient(e.getCause) => true
 
       // Nothing else
-      case _                                                                       => false
+      case e: Throwable                                                            => false
 
     }
 
