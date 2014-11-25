@@ -28,7 +28,7 @@ releaseSettings
 val jacksonFasterxmlVersion = "2.2.2"
 val curatorVersion = "2.4.0"
 val zookeeperVersion = "3.4.5"
-val twittersVersion = "6.22.0"
+val twittersVersion = "6.20.0"
 val simplespecVersion = "0.7.0"
 
 libraryDependencies ++= Seq(
