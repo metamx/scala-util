@@ -36,6 +36,8 @@ trait Walker[+A]
     }
   }
 
+  def withFilter(p: A => Boolean): Walker[A] = filter(p)
+
   def ++[B >: A](other: Walker[B]): Walker[B] = new Walker[B] {
     override def foreach(g: B => Unit) {
       self foreach g
