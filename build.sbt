@@ -26,7 +26,7 @@ releaseSettings
 
 // When updating Jackson, watch out for: https://github.com/FasterXML/jackson-module-scala/issues/148
 val jacksonFasterxmlVersion = "2.2.2"
-val curatorVersion = "2.4.0"
+val curatorVersion = "2.6.0"
 val zookeeperVersion = "3.4.5"
 val twittersVersion = "6.20.0"
 val simplespecVersion = "0.7.0"
