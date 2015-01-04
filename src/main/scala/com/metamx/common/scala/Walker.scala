@@ -19,7 +19,7 @@ trait Walker[+A]
 
   def foreach(f: A => Unit)
 
-  def map[B](f: A => B) = new Walker[B] {
+  def map[B](f: A => B): Walker[B] = new Walker[B] {
     override def foreach(g: B => Unit) = self.foreach(a => g(f(a)))
   }
 
@@ -66,7 +66,11 @@ trait Walker[+A]
     current
   }
 
-  def size = foldLeft(0)((i, _) => i + 1)
+  def size: Long = {
+    var count = 0L
+    foreach(_ => count += 1)
+    count
+  }
 }
 
 object Walker
