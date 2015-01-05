@@ -13,7 +13,21 @@ object threads extends Logging
     runnerThread(name, Some(quietPeriod), f)
   }
 
+  def initRunnerThread(name: String, f: => Any): Thread = {
+    initRunnerThread(name, None, f)
+  }
+
+  def initRunnerThread(name: String, quietPeriod: Period, f: => Any): Thread = {
+    initRunnerThread(name, Some(quietPeriod), f)
+  }
+
   private def runnerThread(name: String, quietPeriod: Option[Period], f: => Any): Thread = {
+    val thread = initRunnerThread(name, quietPeriod, f)
+    thread.start()
+    thread
+  }
+
+  private def initRunnerThread(name: String, quietPeriod: Option[Period], f: => Any): Thread = {
     val runnable = loggingRunnable {
       val quietMillis = quietPeriod.map(_.toStandardDuration.getMillis)
 
@@ -41,7 +55,6 @@ object threads extends Logging
     val thread = new Thread(runnable)
     thread.setName(name)
     thread.setDaemon(true)
-    thread.start()
 
     thread
   }
