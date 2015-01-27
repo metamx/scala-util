@@ -195,7 +195,7 @@ abstract class DB(config: DBConfig) extends Logging {
       }
     }
 
-    def exists(table: String) = !raises[StatementException] { select("select * from %s limit 0" format table) }
+    def exists(table: String) = !raises[java.sql.SQLException] { select("select * from %s limit 0" format table) }
 
   }
 
