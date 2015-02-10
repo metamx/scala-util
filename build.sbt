@@ -10,19 +10,36 @@ lazy val root = project.in(file("."))
 
 net.virtualvoid.sbt.graph.Plugin.graphSettings
 
-resolvers ++= Seq(
-  "Metamarkets Releases" at "https://metamx.artifactoryonline.com/metamx/libs-releases/"
-)
+licenses := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
+
+homepage := Some(url("https://github.com/metamx/scala-util"))
 
 publishMavenStyle := true
 
-publishTo := Some("pub-libs" at "https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local")
+publishTo := Some("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+
+pomIncludeRepository := { _ => false }
+
+pomExtra := (
+  <scm>
+    <url>https://github.com/metamx/scala-util.git</url>
+    <connection>scm:git:git@github.com:metamx/scala-util.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <name>Gian Merlino</name>
+      <organization>Metamarkets Group Inc.</organization>
+      <organizationUrl>https://www.metamarkets.com</organizationUrl>
+    </developer>
+  </developers>)
 
 parallelExecution in Test := false
 
 testOptions += Tests.Argument(TestFrameworks.JUnit, "-Duser.timezone=UTC")
 
 releaseSettings
+
+ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
 
 // When updating Jackson, watch out for: https://github.com/FasterXML/jackson-module-scala/issues/148
 val jacksonFasterxmlVersion = "2.2.2"
@@ -36,10 +53,10 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.metamx" % "java-util" % "0.26.6" force(),
-  "com.metamx" % "http-client" % "0.9.12" force(),
-  "com.metamx" % "emitter" % "0.2.14" force(),
-  "com.metamx" % "server-metrics" % "0.0.9" force()
+  "com.metamx" % "java-util" % "0.26.14" force(),
+  "com.metamx" % "http-client" % "1.0.0" force(),
+  "com.metamx" % "emitter" % "0.3.0" force(),
+  "com.metamx" % "server-metrics" % "0.0.10" force()
 )
 
 libraryDependencies ++= Seq(
@@ -47,7 +64,7 @@ libraryDependencies ++= Seq(
   "commons-lang" % "commons-lang" % "2.6" force(),
   "joda-time" % "joda-time" % "2.1" force(),
   "org.joda" % "joda-convert" % "1.6" force(),
-  "org.scala-tools.time" %% "time" % "0.6-mmx1" force(),
+  "com.metamx" %% "time" % "0.6-mmx3" force(),
   "org.skife.config" % "config-magic" % "0.9" force(),
   "com.google.guava" % "guava" % "16.0.1" force(),
   "org.yaml" % "snakeyaml" % "1.11" force()
