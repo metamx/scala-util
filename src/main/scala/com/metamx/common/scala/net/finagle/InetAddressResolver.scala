@@ -61,7 +61,7 @@ object DefaultInetAddressResolver extends InetAddressResolver(
     Executors.newSingleThreadExecutor(
       new ThreadFactoryBuilder()
         .setNameFormat("InetAddressResolver-Default")
-        .setDaemon(false)
+        .setDaemon(true)
         .build()
     )
   ),
