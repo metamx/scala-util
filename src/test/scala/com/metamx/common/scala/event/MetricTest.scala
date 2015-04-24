@@ -15,7 +15,6 @@ class MetricTest extends Matchers
     val res = m1 + m2
 
     res.metric must be("metric")
-
     res.value must be(1)
   }
 
@@ -26,7 +25,7 @@ class MetricTest extends Matchers
 
     evaluating {
       m1 + m2
-    } must throwAn[IllegalArgumentException]
+    } must throwAn[IllegalArgumentException]("metric already defined as metric1, refusing to shadow with metric2")
   }
 
   @Test
@@ -36,17 +35,16 @@ class MetricTest extends Matchers
 
     evaluating {
       Metric(userDims = Map("dim" -> Seq("value1"))) + Metric(userDims = Map("dim" -> Seq("value2")))
-    } must throwAn[IllegalArgumentException]
+    } must throwAn[IllegalArgumentException]("userDims has common keys: dim")
 
     val res = Metric(userDims = Map("dim1" -> Seq("value1"))) +
       Metric(userDims = Map("dim2" -> Seq("value2.1", "value2.2")))
 
     res.userDims.get("dim1").isDefined must be(true)
-    res.userDims.get("dim1").get.head must be("value1")
+    res.userDims.get("dim1") must be(Some(Seq("value1")))
 
     res.userDims.get("dim2").isDefined must be(true)
-    res.userDims.get("dim2").get.head must be("value2.1")
-    res.userDims.get("dim2").get.size must be(2)
+    res.userDims.get("dim2") must be(Some(Seq("value2.1", "value2.2")))
   }
 
   @Test
