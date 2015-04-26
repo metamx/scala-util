@@ -27,9 +27,9 @@ case class Metric(
     def intersectMap(x: Map[String, Iterable[String]], y: Map[String, Iterable[String]]): Map[String, Iterable[String]] =
     {
       x.keySet intersect y.keySet match {
-        case xs if xs.isEmpty => x ++ y
-        case r => throw new IllegalArgumentException(
-          "userDims has common keys: %s" format r.mkString(",")
+        case xy if xy.isEmpty => x ++ y
+        case xy => throw new IllegalArgumentException(
+          "userDims has common keys: %s" format xy.mkString(",")
         )
       }
     }
@@ -54,11 +54,8 @@ case class Metric(
   override def build(service: String, host: String) = {
     val builder = ServiceMetricEvent.builder()
 
-    val userDimsOpt = Option(userDims)
-    if (userDimsOpt.isDefined) {
-      for (userDims <- userDimsOpt; (k, v) <- userDims) {
-        builder.setDimension(k, v.toArray)
-      }
+    for (userDims <- Option(userDims); (k, v) <- userDims) {
+      builder.setDimension(k, v.toArray)
     }
 
     builder.build(created, noNull(metric), noNull(value))
@@ -86,16 +83,19 @@ object Metric
     userDims: Map[String, Iterable[String]] = Map.empty
   ) =
   {
-    if (user1  != null) { userDims + ("user1"  -> user1) }
-    if (user2  != null) { userDims + ("user2"  -> user2) }
-    if (user3  != null) { userDims + ("user3"  -> user3) }
-    if (user4  != null) { userDims + ("user4"  -> user4) }
-    if (user5  != null) { userDims + ("user5"  -> user5) }
-    if (user6  != null) { userDims + ("user6"  -> user6) }
-    if (user7  != null) { userDims + ("user7"  -> user7) }
-    if (user8  != null) { userDims + ("user8"  -> user8) }
-    if (user9  != null) { userDims + ("user9"  -> user9) }
-    if (user10 != null) { userDims + ("user10" -> user10) }
-    new Metric(metric, value, userDims, created)
+    var result = new Metric(metric, value, userDims, created)
+
+    if (user1  != null) { result = result + ("user1",  user1)  }
+    if (user2  != null) { result = result + ("user2",  user2)  }
+    if (user3  != null) { result = result + ("user3",  user3)  }
+    if (user4  != null) { result = result + ("user4",  user4)  }
+    if (user5  != null) { result = result + ("user5",  user5)  }
+    if (user6  != null) { result = result + ("user6",  user6)  }
+    if (user7  != null) { result = result + ("user7",  user7)  }
+    if (user8  != null) { result = result + ("user8",  user8)  }
+    if (user9  != null) { result = result + ("user9",  user9)  }
+    if (user10 != null) { result = result + ("user10", user10) }
+
+    result
   }
 }
