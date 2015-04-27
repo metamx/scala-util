@@ -6,11 +6,11 @@ import com.metamx.common.scala.untyped._
 
 // A partially constructed ServiceEventBuilder[ServiceMetricEvent]. Immutable, unlike ServiceMetricEvent.Builder.
 case class Metric(
-  metric: String,
-  value: Number,
+  metric:   String,
+  value:    Number,
   userDims: Map[String, Iterable[String]],
-  created: DateTime
-  ) extends ServiceEventBuilder[ServiceMetricEvent]
+  created:  DateTime
+) extends ServiceEventBuilder[ServiceMetricEvent]
 {
 
   // Join two partially constructed metrics; throw IllegalArgumentException if any field is defined on both
@@ -65,19 +65,19 @@ case class Metric(
 object Metric
 {
   def apply(
-    metric: String = null,
-    value: Number = null,
-    user1:   Iterable[String] = null,
-    user2:   Iterable[String] = null,
-    user3:   Iterable[String] = null,
-    user4:   Iterable[String] = null,
-    user5:   Iterable[String] = null,
-    user6:   Iterable[String] = null,
-    user7:   Iterable[String] = null,
-    user8:   Iterable[String] = null,
-    user9:   Iterable[String] = null,
-    user10:  Iterable[String] = null,
-    created: DateTime = null,
+    metric:   String = null,
+    value:    Number = null,
+    user1:    Iterable[String] = null,
+    user2:    Iterable[String] = null,
+    user3:    Iterable[String] = null,
+    user4:    Iterable[String] = null,
+    user5:    Iterable[String] = null,
+    user6:    Iterable[String] = null,
+    user7:    Iterable[String] = null,
+    user8:    Iterable[String] = null,
+    user9:    Iterable[String] = null,
+    user10:   Iterable[String] = null,
+    created:  DateTime = null,
     userDims: Map[String, Iterable[String]] = Map.empty
   ) =
   {
