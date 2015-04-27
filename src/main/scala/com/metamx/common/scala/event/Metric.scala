@@ -54,9 +54,7 @@ case class Metric(
   override def build(service: String, host: String) = {
     val builder = ServiceMetricEvent.builder()
 
-    for (userDims <- Option(userDims); (k, v) <- userDims) {
-      builder.setDimension(k, v.toArray)
-    }
+    userDims.foreach { case (k, v) => builder.setDimension(k, v.toArray) }
 
     builder.build(created, noNull(metric), noNull(value))
       .build(noNull(service), noNull(host))
