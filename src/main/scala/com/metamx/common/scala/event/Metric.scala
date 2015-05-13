@@ -34,7 +34,7 @@ case class Metric(
       }
     }
 
-    Metric(
+    new Metric(
       metric = f(this.metric, that.metric, "metric"),
       value = f(this.value, that.value, "value"),
       userDims = intersectMap(this.userDims, that.userDims),
