@@ -147,6 +147,8 @@ package object collection {
       m.filter(kv => f(kv._1))
     }
 
+    def headOpt[V](key: A)(implicit ev: B <:< Iterable[V]) = m.get(key).flatMap(_.headOption)
+
   }
   implicit def MapLikeOps[A, B, Repr <: MapLike[A, B, Repr] with scala.collection.Map[A, B]](m: MapLike[A, B, Repr]) = new MapLikeOps[A, B, Repr](m)
 
