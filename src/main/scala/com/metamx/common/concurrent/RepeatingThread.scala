@@ -28,10 +28,10 @@ extends Thread with Logging {
   @volatile
   private var cancelled = false
 
-  override def run {
+  override def run() {
     try {
       while (!cancelled) {
-        runnable.run
+        runnable.run()
         try {
           Thread.sleep(delay.millis)
         } catch {
@@ -45,13 +45,13 @@ extends Thread with Logging {
     }
   }
 
-  def repeatNow {
-    interrupt
+  def repeatNow() {
+    interrupt()
   }
 
-  def cancel {
+  def cancel() {
     cancelled = true
-    interrupt
+    interrupt()
   }
 
 }

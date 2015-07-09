@@ -2,6 +2,7 @@ package com.metamx.common.scala
 
 import com.metamx.common.scala.concurrent._
 import org.scala_tools.time.TypeImports._
+import com.metamx.common.scala.Predef._
 
 object threads extends Logging
 {
@@ -19,6 +20,18 @@ object threads extends Logging
 
   def initRunnerThread(name: String, quietPeriod: Period, f: => Any): Thread = {
     initRunnerThread(name, Some(quietPeriod), f)
+  }
+
+  def startHaltingThread(body: => Any, name: String) = daemonThread { abortingRunnable {
+    try body catch {
+      case e: Throwable =>
+        log.error(e, "Halting")
+        Runtime.getRuntime.halt(1)
+    }
+  }} withEffect {
+    t =>
+      t.setName(name)
+      t.start()
   }
 
   private def runnerThread(name: String, quietPeriod: Option[Period], f: => Any): Thread = {
