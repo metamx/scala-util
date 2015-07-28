@@ -1,10 +1,29 @@
+/**
+ * Licensed to Metamarkets Group Inc. (Metamarkets) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  Metamarkets licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 organization := "com.metamx"
 
 name := "scala-util"
 
-scalaVersion := "2.9.1"
+scalaVersion := "2.11.7"
 
-crossScalaVersions := Seq("2.9.1", "2.10.4")
+crossScalaVersions := Seq("2.10.5", "2.11.7")
 
 lazy val root = project.in(file("."))
 
@@ -41,15 +60,13 @@ releaseSettings
 
 ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
 
-// When updating Jackson, watch out for: https://github.com/FasterXML/jackson-module-scala/issues/148
-val jacksonFasterxmlVersion = "2.2.2"
+val jacksonFasterxmlVersion = "2.6.0"
 val curatorVersion = "2.6.0"
 val zookeeperVersion = "3.4.5"
-val twittersVersion = "6.20.0"
-val simplespecVersion = "0.7.0"
+val twittersVersion = "6.25.0"
 
 libraryDependencies ++= Seq(
-  "org.eintr.loglady" %% "loglady" % "1.1.0" force()
+  "org.eintr.loglady" %% "loglady" % "1.1.0g" force()
 )
 
 libraryDependencies ++= Seq(
@@ -64,7 +81,7 @@ libraryDependencies ++= Seq(
   "commons-lang" % "commons-lang" % "2.6" force(),
   "joda-time" % "joda-time" % "2.1" force(),
   "org.joda" % "joda-convert" % "1.6" force(),
-  "com.metamx" %% "time" % "0.6-mmx3" force(),
+  "org.scalaj" %% "scalaj-time" % "0.5" force(),
   "org.skife.config" % "config-magic" % "0.9" force(),
   "com.google.guava" % "guava" % "16.0.1" force(),
   "org.yaml" % "snakeyaml" % "1.11" force()
@@ -93,19 +110,14 @@ libraryDependencies ++= Seq(
   "org.apache.curator" % "curator-x-discovery" % curatorVersion exclude("org.jboss.netty", "netty") force()
 )
 
-def TwitterCross = CrossVersion.binaryMapped {
-  case "2.9.1" => "2.9.2"
-  case x => x
-}
-
 libraryDependencies ++= Seq(
-  "com.twitter" % "util-core" % twittersVersion cross TwitterCross force(),
-  "com.twitter" % "finagle-core" % twittersVersion cross TwitterCross force(),
-  "com.twitter" % "finagle-http" % twittersVersion cross TwitterCross force()
+  "com.twitter" %% "util-core" % twittersVersion force(),
+  "com.twitter" %% "finagle-core" % twittersVersion force(),
+  "com.twitter" %% "finagle-http" % twittersVersion force()
 )
 
 libraryDependencies ++= Seq(
-  "io.netty" % "netty" % "3.9.5.Final" force()
+  "io.netty" % "netty" % "3.10.1.Final" force()
 )
 
 //
@@ -117,13 +129,14 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies <++= scalaVersion {
-  case "2.9.1" => Seq(
-    "junit" % "junit" % "4.10" % "test" force(),
-    "com.simple" % "simplespec_2.9.2" % "0.7.0" % "test"
-  )
-  case "2.10.4" => Seq(
+  case x if x.startsWith("2.10.") => Seq(
     "junit" % "junit" % "4.11" % "test" force(),
     "com.simple" % "simplespec_2.10.2" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force(),
+    "org.mockito" % "mockito-core" % "1.9.5" % "test" force()
+  )
+  case _ => Seq(
+    "junit" % "junit" % "4.11" % "test" force(),
+    "com.simple" %% "simplespec" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force(),
     "org.mockito" % "mockito-core" % "1.9.5" % "test" force()
   )
 }
