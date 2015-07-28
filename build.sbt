@@ -125,19 +125,17 @@ libraryDependencies ++= Seq(
 //
 
 libraryDependencies ++= Seq(
-  "org.slf4j" % "slf4j-simple" % "1.7.2" % "test" force()
+  "org.slf4j" % "slf4j-simple" % "1.7.2" % "test" force(),
+  "junit" % "junit" % "4.11" % "test" force(),
+  "org.mockito" % "mockito-core" % "1.9.5" % "test" force()
 )
 
 libraryDependencies <++= scalaVersion {
   case x if x.startsWith("2.10.") => Seq(
-    "junit" % "junit" % "4.11" % "test" force(),
-    "com.simple" % "simplespec_2.10.2" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force(),
-    "org.mockito" % "mockito-core" % "1.9.5" % "test" force()
+    "com.simple" % "simplespec_2.10.2" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force()
   )
   case _ => Seq(
-    "junit" % "junit" % "4.11" % "test" force(),
-    "com.simple" %% "simplespec" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force(),
-    "org.mockito" % "mockito-core" % "1.9.5" % "test" force()
+    "com.simple" %% "simplespec" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force()
   )
 }
 
