@@ -66,7 +66,7 @@ val zookeeperVersion = "3.4.5"
 val twittersVersion = "6.25.0"
 
 libraryDependencies ++= Seq(
-  "org.eintr.loglady" %% "loglady" % "1.1.0g" force()
+  "com.metamx" %% "loglady" % "1.1.0-mmx" force()
 )
 
 libraryDependencies ++= Seq(
