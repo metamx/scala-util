@@ -97,7 +97,7 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.jdbi" % "jdbi" % "2.27" force(),
+  "org.jdbi" % "jdbi" % "2.70" force(),
   "mysql" % "mysql-connector-java" % "5.1.18" force(),
   "com.h2database" % "h2" % "1.3.158" force(),
   "c3p0" % "c3p0" % "0.9.1.2" force()
