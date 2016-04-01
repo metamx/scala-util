@@ -1,17 +1,17 @@
 package com.metamx.common.scala.net.curator
 
-import com.metamx.common.lifecycle.{LifecycleStop, LifecycleStart, Lifecycle}
 import com.metamx.common.lifecycle.Lifecycle.Handler
+import com.metamx.common.lifecycle.{Lifecycle, LifecycleStart, LifecycleStop}
 import java.net.URI
-import scala.collection.JavaConverters._
 import org.apache.curator.framework.CuratorFramework
-import org.apache.curator.x.discovery.{ServiceCache, ServiceProvider, ServiceDiscoveryBuilder, ServiceInstance}
+import org.apache.curator.x.discovery.{ServiceInstance, _}
+import scala.collection.JavaConverters._
 
-class Disco(curator: CuratorFramework, config: DiscoConfig)
+abstract class AbstractDisco[T](curator: CuratorFramework, config: DiscoConfig, payload: Option[T] = None)(clazz: Class[T])
 {
-  private val me: Option[ServiceInstance[Void]] = config.discoAnnounce map {
+  val me: Option[ServiceInstance[T]] = config.discoAnnounce map {
     service =>
-      val builder = ServiceInstance.builder[Void]().name(service.name)
+      val builder = ServiceInstance.builder[T]().name(service.name).payload(payload.orNull(null))
       if (service.ssl) {
         builder.sslPort(service.port)
       } else {
@@ -21,8 +21,8 @@ class Disco(curator: CuratorFramework, config: DiscoConfig)
       builder.build()
   }
 
-  private val disco = {
-    val builder = ServiceDiscoveryBuilder.builder(Void.TYPE)
+  val disco: ServiceDiscovery[T] = {
+    val builder = ServiceDiscoveryBuilder.builder(clazz)
       .basePath(config.discoPath)
       .client(curator)
 
@@ -75,7 +75,7 @@ class Disco(curator: CuratorFramework, config: DiscoConfig)
   /**
    * Discovers a URI once, without a provider. This should be avoided in high volume use cases.
    */
-  def instanceFor(service: String): Option[ServiceInstance[Void]] = disco.queryForInstances(service).asScala.headOption
+  def instanceFor(service: String): Option[ServiceInstance[T]] = disco.queryForInstances(service).asScala.headOption
 
   @LifecycleStart
   def start() {
@@ -85,6 +85,17 @@ class Disco(curator: CuratorFramework, config: DiscoConfig)
   @LifecycleStop
   def stop() {
     disco.close()
+  }
+}
+
+class Disco(curator: CuratorFramework, config: DiscoConfig) extends AbstractDisco[Void](curator, config)(Void.TYPE)
+
+class PayloadDisco(
+  curator: CuratorFramework, config: DiscoConfig, payload: Option[Array[Byte]] = None
+) extends AbstractDisco[Array[Byte]](curator, config, payload)(classOf[Array[Byte]])
+{
+  def this(curator: CuratorFramework, config: DiscoConfig, payload: Array[Byte]) = {
+    this(curator, config, Some(payload))
   }
 }
 
@@ -108,7 +119,7 @@ class ServiceInstanceOps[T](service: ServiceInstance[T])
 
   def sslPort = service.getSslPort
 
-  def payload = service.getPayload
+  def payload = Option(service.getPayload)
 
   def registrationTimeUTC = service.getRegistrationTimeUTC
 
