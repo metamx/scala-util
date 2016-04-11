@@ -90,6 +90,12 @@ abstract class AbstractDisco[T](curator: CuratorFramework, config: DiscoConfig, 
 
 class Disco(curator: CuratorFramework, config: DiscoConfig) extends AbstractDisco[Void](curator, config)(Void.TYPE)
 
+/**
+ * Please note, that if you use PayloadDisco with not null payload you will get a ClassCastException when you try
+ * to get this data using the Disco class. But you can use PayloadDisco to get data which was written by Disco class.
+ * If you want to update your service's announce from Disco to PayloadDisco, first make sure that all clients
+ * of this service are updated to PayloadDisco.
+ */
 class PayloadDisco(
   curator: CuratorFramework, config: DiscoConfig, payload: Option[Array[Byte]] = None
 ) extends AbstractDisco[Array[Byte]](curator, config, payload)(classOf[Array[Byte]])
