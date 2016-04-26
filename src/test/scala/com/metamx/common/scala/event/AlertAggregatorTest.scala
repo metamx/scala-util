@@ -11,11 +11,15 @@ import org.junit.Test
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 
 class AlertAggregatorTest extends Matchers with Logging
 {
 
-  class TestException extends Exception("boo!") with NoStacktrace
+  class TestException(message: String) extends Exception(message) with NoStacktrace
+  {
+    def this() = this("boo!")
+  }
 
   def createEmitter(): (Seq[Event], ServiceEmitter) = {
     val buffer = new ArrayBuffer[Event] with mutable.SynchronizedBuffer[Event]
@@ -186,6 +190,44 @@ class AlertAggregatorTest extends Matchers with Logging
           "data" -> Map(
             "sampleDetails" -> Map("baz" -> 3),
             "alertCount" -> 1
+          )
+        )
+      )
+    )
+  }
+
+  @Test
+  def testExceptionBindWithData()
+  {
+    val preferLastRandom = new Random(){
+      override def nextInt(count:Int): Int = 0
+    }
+    val (events, emitter) = createEmitter()
+    val alerts = new AlertAggregator(log, preferLastRandom)
+    alerts.put(new TestException("baz1"), "foo", Map("baz" -> 1))
+    alerts.put(new TestException("baz2"), "foo", Map("baz" -> 2))
+    alerts.monitor.withEffect(_.start()).monitor(emitter)
+    val eventDicts = events
+      .map(d => dict(normalize(d.toMap.asScala - "timestamp")))
+      .sortBy(x => str(x("description")) + str(dict(x("data")).getOrElse("exceptionType", "")))
+    eventDicts must be(
+      Seq(
+        Map(
+          "feed" -> "alerts",
+          "service" -> "service",
+          "host" -> "host",
+          "severity" -> "anomaly",
+          "description" -> "foo",
+          "data" -> Map(
+            "sampleDetails" -> Map("baz" -> 2),
+            "exceptionType" -> (new TestException).getClass.getName,
+            "exceptionMessage" -> "baz2",
+            "exceptionStackTrace" ->
+              Seq(
+                "com.metamx.common.scala.event.AlertAggregatorTest$TestException: baz2\n",
+                "\tat com.twitter.util.NoStacktrace(Unknown Source)\n"
+              ).mkString,
+            "alertCount" -> 2
           )
         )
       )

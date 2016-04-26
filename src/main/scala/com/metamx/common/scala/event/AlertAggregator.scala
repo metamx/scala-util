@@ -17,13 +17,12 @@ import scala.util.Random
  *
  * @param log Used to log exceptions
  */
-class AlertAggregator(log: Logger)
+class AlertAggregator(log: Logger, private val rand: Random = new Random)
 {
   // (description, exception class)
   type AlertKey = (String, Option[String])
 
   private val lock   = new AnyRef
-  private val rand   = new Random
   private val alerts = new AtomicReference(mutable.HashMap[AlertKey, AggregatedAlerts]())
 
   def put(e: Throwable, description: String, data: Dict) {
@@ -37,7 +36,7 @@ class AlertAggregator(log: Logger)
   private def put(e: Option[Throwable], description: String, data: Dict) {
     val key = (description, e.map(_.getClass.getName))
     lock.synchronized {
-      alerts.get().getOrElseUpdate(key, new AggregatedAlerts(description, e)).put(data)
+      alerts.get().getOrElseUpdate(key, new AggregatedAlerts(description)).put(e, data)
     }
   }
 
@@ -65,16 +64,18 @@ class AlertAggregator(log: Logger)
     }
   }
 
-  private class AggregatedAlerts(val description: String, val e: Option[Throwable])
+  private class AggregatedAlerts(val description: String)
   {
-    var count          = 0
-    var data: Dict     = Map.empty
+    var count                = 0
+    var data: Dict           = Map.empty
+    var e: Option[Throwable] = None
 
-    def put(data: Dict) {
+    def put(e: Option[Throwable], data: Dict) {
       // Try to get representative data instead of just the first ones.
       count += 1
       if (rand.nextInt(count) == 0) {
         this.data = data
+        this.e = e
       }
     }
   }
