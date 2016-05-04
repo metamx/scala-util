@@ -7,11 +7,11 @@ import org.apache.curator.framework.CuratorFramework
 import org.apache.curator.x.discovery.{ServiceInstance, _}
 import scala.collection.JavaConverters._
 
-abstract class AbstractDisco[T](curator: CuratorFramework, config: DiscoConfig, payload: Option[T] = None)(clazz: Class[T])
+abstract class AbstractDisco[T >: Null](curator: CuratorFramework, config: DiscoConfig, payload: Option[T] = None)(clazz: Class[T])
 {
   val me: Option[ServiceInstance[T]] = config.discoAnnounce map {
     service =>
-      val builder = ServiceInstance.builder[T]().name(service.name).payload(payload.orNull(null))
+      val builder = ServiceInstance.builder[T]().name(service.name).payload(payload.orNull)
       if (service.ssl) {
         builder.sslPort(service.port)
       } else {
