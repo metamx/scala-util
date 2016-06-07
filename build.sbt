@@ -63,7 +63,8 @@ ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
 val jacksonFasterxmlVersion = "2.6.0"
 val curatorVersion = "2.10.0"
 val zookeeperVersion = "3.4.8"
-val twittersVersion = "6.25.0"
+val twittersVersion = "6.31.0"
+val twitterUtilsVersion = "6.30.0"
 
 libraryDependencies ++= Seq(
   "com.metamx" %% "loglady" % "1.1.0-mmx" force()
@@ -111,7 +112,7 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.twitter" %% "util-core" % twittersVersion force(),
+  "com.twitter" %% "util-core" % twitterUtilsVersion force(),
   "com.twitter" %% "finagle-core" % twittersVersion force(),
   "com.twitter" %% "finagle-http" % twittersVersion force()
 )
