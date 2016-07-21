@@ -3,23 +3,58 @@ package com.metamx.common.scala
 import com.metamx.common.scala.concurrent._
 import org.scala_tools.time.TypeImports._
 import com.metamx.common.scala.Predef._
+import scala.util.control.NonFatal
 
 object threads extends Logging
 {
-  def runnerThread(name: String, f: => Any): Thread = {
-    runnerThread(name, None, f)
-  }
+  class RunnerThread(name: String, quietPeriod: Option[Period], f: => Any) extends Thread with Logging
+  {
+    setName(name)
+    setDaemon(true)
 
-  def runnerThread(name: String, quietPeriod: Period, f: => Any): Thread = {
-    runnerThread(name, Some(quietPeriod), f)
-  }
+    @volatile private var terminated = false
 
-  def initRunnerThread(name: String, f: => Any): Thread = {
-    initRunnerThread(name, None, f)
-  }
+    override def run(): Unit = {
+      try {
+        val quietMillis = quietPeriod.map(_.toStandardDuration.getMillis)
 
-  def initRunnerThread(name: String, quietPeriod: Period, f: => Any): Thread = {
-    initRunnerThread(name, Some(quietPeriod), f)
+        while (!terminated && !isInterrupted) {
+          try {
+            val startMillis = System.currentTimeMillis()
+            try {
+              f
+            } catch {
+              case NonFatal(e) => log.error(e, "Exception while running thread [%s]".format(name))
+            }
+
+            quietMillis match {
+              case Some(m) =>
+                val waitMillis = startMillis + m - System.currentTimeMillis()
+                if (waitMillis > 0) {
+                  Thread.sleep(waitMillis)
+                }
+
+              case None => // Don't need to sleep
+            }
+          } catch {
+            case e: InterruptedException =>
+              if (terminated) {
+                log.info("Thread [%s] terminated")
+              } else {
+                log.info("Thread [%s] interrupted")
+              }
+              interrupt()
+          }
+        }
+      } catch {
+        case e: Throwable => log.error(e, "Thread [%s] killed by exception".format(name))
+      }
+    }
+
+    def terminate() {
+      terminated = true
+      interrupt()
+    }
   }
 
   def startHaltingThread(body: => Any, name: String) = daemonThread { abortingRunnable {
@@ -34,41 +69,25 @@ object threads extends Logging
       t.start()
   }
 
-  private def runnerThread(name: String, quietPeriod: Option[Period], f: => Any): Thread = {
-    val thread = initRunnerThread(name, quietPeriod, f)
-    thread.start()
-    thread
+  def runnerThread(name: String, f: => Any): RunnerThread = {
+    runnerThread(name, None, f)
   }
 
-  private def initRunnerThread(name: String, quietPeriod: Option[Period], f: => Any): Thread = {
-    val runnable = loggingRunnable {
-      val quietMillis = quietPeriod.map(_.toStandardDuration.getMillis)
+  def runnerThread(name: String, quietPeriod: Period, f: => Any): RunnerThread = {
+    runnerThread(name, Some(quietPeriod), f)
+  }
 
-      while (!Thread.currentThread().isInterrupted) {
-        val startMillis = System.currentTimeMillis()
-        try {
-          f
-        } catch {
-          case e: Exception => log.error(e, "Exception while running %s".format(name))
-        }
+  def initRunnerThread(name: String, f: => Any): RunnerThread = {
+    new RunnerThread(name, None, f)
+  }
 
-        quietMillis match {
-          case Some(m) =>
-            val waitMillis = startMillis + m - System.currentTimeMillis()
-            if (waitMillis > 0) {
-              Thread.sleep(waitMillis)
-            }
+  def initRunnerThread(name: String, quietPeriod: Period, f: => Any): RunnerThread = {
+    new RunnerThread(name, Some(quietPeriod), f)
+  }
 
-          case None => // Don't need to sleep
-        }
-
-      }
-    }
-
-    val thread = new Thread(runnable)
-    thread.setName(name)
-    thread.setDaemon(true)
-
+  private def runnerThread(name: String, quietPeriod: Option[Period], f: => Any): RunnerThread = {
+    val thread = new RunnerThread(name, quietPeriod, f)
+    thread.start()
     thread
   }
 }
