@@ -46,7 +46,8 @@ pomExtra := (
   </scm>
   <developers>
     <developer>
-      <name>Gian Merlino</name>
+      <name>Metamarkets Open Source Team</name>
+      <email>oss@metamarkets.com</email>
       <organization>Metamarkets Group Inc.</organization>
       <organizationUrl>https://www.metamarkets.com</organizationUrl>
     </developer>
