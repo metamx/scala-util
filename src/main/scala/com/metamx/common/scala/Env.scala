@@ -16,10 +16,10 @@
 
 package com.metamx.common.scala
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 object Env {
-  val env: _root_.scala.collection.Map[String,String] = System.getenv
+  val env: _root_.scala.collection.Map[String,String] = System.getenv.asScala
   def apply (k: String)            = env(k)
   def apply (k: String, v: String) = env.getOrElse(k,v)
   def get   (k: String)            = env.get(k)

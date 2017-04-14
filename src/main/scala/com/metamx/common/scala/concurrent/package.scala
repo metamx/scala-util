@@ -18,14 +18,10 @@ package com.metamx.common.scala
 
 package object concurrent {
 
-  import com.metamx.common.scala.Abort
-  import com.metamx.common.scala.exception._
-  import com.metamx.common.scala.Logging
+  import com.github.nscala_time.time.Imports._
   import com.metamx.common.scala.Predef._
-  import java.util.concurrent.Callable
-  import java.util.concurrent.ExecutionException
-  import java.util.concurrent.Executors
-  import org.scala_tools.time.Imports._
+  import com.metamx.common.scala.exception._
+  import java.util.concurrent.{Callable, ExecutionException, Executors}
   import scala.util.Random
 
   // loggingRunnable and abortingRunnable are almost always better than these

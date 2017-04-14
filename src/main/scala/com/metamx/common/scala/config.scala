@@ -17,11 +17,12 @@
 package com.metamx.common.scala
 
 import org.skife.config.ConfigurationObjectFactory
+import scala.reflect.runtime.universe.TypeTag
 
 object config {
 
   class ConfigOps(configs: ConfigurationObjectFactory) {
-    implicit def apply[X](implicit mf: Manifest[X]): X = configs.build(mf.erasure.asInstanceOf[Class[X]])
+    implicit def apply[X](implicit tag: TypeTag[X]): X = configs.build(tag.mirror.runtimeClass(tag.tpe).asInstanceOf[Class[X]])
   }
   implicit def ConfigOps(configs: ConfigurationObjectFactory) = new ConfigOps(configs)
 

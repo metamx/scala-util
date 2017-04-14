@@ -16,12 +16,11 @@
 
 package com.metamx.common.scala
 
+import com.github.nscala_time.time.Imports._
 import com.metamx.common.Backoff
 import com.metamx.common.scala.option.OptionOps
-import scala.reflect.ClassManifest
-import org.scala_tools.time.Imports._
-
 import scala.annotation.tailrec
+import scala.reflect.ClassTag
 
 object control extends Logging {
 
@@ -31,13 +30,9 @@ object control extends Logging {
     case None    => untilSome(x)
   }
 
-  // This implementation isn't space safe, since Stream.flatten uses stack space proportional to the number of
-  // consecutive None's [https://issues.scala-lang.org/browse/SI-153]
-  //def untilSome[X](x: => Option[X]): X = Stream.continually(x).flatten.head
-
   def retryOnError[E <: Exception](isTransient: E => Boolean) = new {
-    def apply[X](x: => X)(implicit cm: ClassManifest[E]) = retryOnErrors(
-      (e: Exception) => cm.erasure.isAssignableFrom(e.getClass) && isTransient(e.asInstanceOf[E])
+    def apply[X](x: => X)(implicit ct: ClassTag[E]) = retryOnErrors(
+      (e: Exception) => ct.runtimeClass.isAssignableFrom(e.getClass) && isTransient(e.asInstanceOf[E])
     )(x)
   }
 
@@ -61,11 +56,11 @@ object control extends Logging {
     }
   }
 
-  def ifException[E <: Exception](implicit cm: ClassManifest[E]) = (e: Exception) =>
-    cm.erasure.isAssignableFrom(e.getClass)
+  def ifException[E <: Exception](implicit ct: ClassTag[E]) = (e: Exception) =>
+    ct.runtimeClass.isAssignableFrom(e.getClass)
 
-  def ifExceptionSatisfies[E <: Exception](pred: E => Boolean)(implicit cm: ClassManifest[E]) = (e: Exception) =>
-    cm.erasure.isAssignableFrom(e.getClass) && pred(e.asInstanceOf[E])
+  def ifExceptionSatisfies[E <: Exception](pred: E => Boolean)(implicit ct: ClassTag[E]) = (e: Exception) =>
+    ct.runtimeClass.isAssignableFrom(e.getClass) && pred(e.asInstanceOf[E])
 
   class PredicateOps[A](f: A => Boolean)
   {

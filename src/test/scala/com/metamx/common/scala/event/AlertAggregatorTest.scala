@@ -6,17 +6,17 @@ import com.metamx.common.scala.untyped._
 import com.metamx.emitter.core.{Emitter, Event}
 import com.metamx.emitter.service.ServiceEmitter
 import com.simple.simplespec.Matchers
-import com.twitter.util.NoStacktrace
 import org.junit.Test
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Random
+import scala.util.control.NoStackTrace
 
 class AlertAggregatorTest extends Matchers with Logging
 {
 
-  class TestException(message: String) extends Exception(message) with NoStacktrace
+  class TestException(message: String) extends Exception(message) with NoStackTrace
   {
     def this() = this("boo!")
   }
@@ -136,8 +136,7 @@ class AlertAggregatorTest extends Matchers with Logging
             "exceptionMessage" -> "boo!",
             "exceptionStackTrace" ->
               Seq(
-                "com.metamx.common.scala.event.AlertAggregatorTest$TestException: boo!\n",
-                "\tat com.twitter.util.NoStacktrace(Unknown Source)\n"
+                "com.metamx.common.scala.event.AlertAggregatorTest$TestException: boo!\n"
               ).mkString,
             "alertCount" -> 2
           )
@@ -224,8 +223,7 @@ class AlertAggregatorTest extends Matchers with Logging
             "exceptionMessage" -> "baz2",
             "exceptionStackTrace" ->
               Seq(
-                "com.metamx.common.scala.event.AlertAggregatorTest$TestException: baz2\n",
-                "\tat com.twitter.util.NoStacktrace(Unknown Source)\n"
+                "com.metamx.common.scala.event.AlertAggregatorTest$TestException: baz2\n"
               ).mkString,
             "alertCount" -> 2
           )

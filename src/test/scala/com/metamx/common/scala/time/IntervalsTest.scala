@@ -16,10 +16,10 @@
 
 package com.metamx.common.scala.time
 
+import com.github.nscala_time.time.Imports._
 import com.metamx.common.scala.junit.contextually
 import com.simple.simplespec.Matchers
 import org.junit.Test
-import org.scala_tools.time.Imports._
 
 
 class IntervalsTest extends Matchers {
@@ -83,8 +83,8 @@ class IntervalsTest extends Matchers {
 
   @Test def map {
     val xs = Intervals(I(0,1), I(1,2), I(3,4), I(7,8), I(9,10))
-    xs map { i => I(i.start.millis + 1, i.end.millis + 1) } must be(Intervals(I(1,3), I(4,5), I(8,9), I(10,11)))
-    xs map { i => I(i.start.millis / 2, i.end.millis / 2) } must be(Intervals(I(0,2), I(3,5)))
+    xs map { i => I(i.start.getMillis + 1, i.end.getMillis + 1) } must be(Intervals(I(1,3), I(4,5), I(8,9), I(10,11)))
+    xs map { i => I(i.start.getMillis / 2, i.end.getMillis / 2) } must be(Intervals(I(0,2), I(3,5)))
   }
 
   @Test def filter {

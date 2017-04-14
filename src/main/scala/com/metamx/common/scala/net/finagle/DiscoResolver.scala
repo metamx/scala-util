@@ -3,9 +3,9 @@ package com.metamx.common.scala.net.finagle
 import com.metamx.common.lifecycle.Lifecycle
 import com.metamx.common.scala.Logging
 import com.metamx.common.scala.net.curator.Disco
-import com.twitter.finagle.{Addr, Resolver}
+import com.twitter.finagle.{Addr, Address, Resolver}
 import com.twitter.util.{Closable, Future, Time, Var}
-import java.net.{InetSocketAddress, SocketAddress}
+import java.net.InetSocketAddress
 import org.apache.curator.framework.CuratorFramework
 import org.apache.curator.framework.state.ConnectionState
 import org.apache.curator.x.discovery.details.ServiceCacheListener
@@ -27,8 +27,8 @@ class DiscoResolver(disco: Disco) extends Resolver with Logging
       def doUpdate() {
         val newInstances = serviceCache.getInstances.asScala.toSet
         log.info("Updating instances for service[%s] to %s", service, newInstances)
-        val newSocketAddresses: Set[SocketAddress] = newInstances map
-          (instance => new InetSocketAddress(instance.getAddress, instance.getPort))
+        val newSocketAddresses: Set[Address] = newInstances map
+          (instance => Address(new InetSocketAddress(instance.getAddress, instance.getPort)))
         updatable.update(Addr.Bound(newSocketAddresses))
       }
       serviceCache.addListener(

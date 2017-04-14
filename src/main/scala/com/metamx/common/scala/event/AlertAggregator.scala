@@ -1,6 +1,6 @@
 package com.metamx.common.scala.event
 
-import com.metamx.common.scala.Logging.Logger
+import com.metamx.common.scala.Logger
 import com.metamx.common.scala.untyped.Dict
 import com.metamx.emitter.service.ServiceEmitter
 import com.metamx.metrics.{AbstractMonitor, Monitor}

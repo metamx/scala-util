@@ -16,9 +16,8 @@
 
 package com.metamx.common.concurrent
 
+import com.github.nscala_time.time.Imports._
 import com.metamx.common.scala.Logging
-import org.scala_tools.time.Implicits._
-import org.scala_tools.time.Imports.Duration
 
 class RepeatingThread(delay: Duration, runnable: Runnable)
 extends Thread with Logging {
@@ -35,7 +34,7 @@ extends Thread with Logging {
         try {
           Thread.sleep(delay.millis)
         } catch {
-          case e: InterruptedException =>
+          case _: InterruptedException =>
             // Continue
         }
       }

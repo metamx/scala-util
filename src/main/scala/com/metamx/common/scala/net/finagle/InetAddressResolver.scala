@@ -3,7 +3,7 @@ package com.metamx.common.scala.net.finagle
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.metamx.common.scala.Logging
 import com.twitter.finagle.util.{DefaultTimer, InetSocketAddressUtil}
-import com.twitter.finagle.{Addr, Resolver}
+import com.twitter.finagle.{Addr, Address, Resolver}
 import com.twitter.util.{Closable, Future, FuturePool, Timer, Var, Duration => TwitterDuration}
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -47,7 +47,7 @@ class InetAddressResolver(ttl: TwitterDuration, futurePool: FuturePool, timer: T
       }
   }
 
-  private def resolveString(arg: String) = Addr.Bound(InetSocketAddressUtil.parseHosts(arg): _*)
+  private def resolveString(arg: String) = Addr.Bound(InetSocketAddressUtil.parseHosts(arg).map(Address(_)): _*)
 }
 
 object InetAddressResolver

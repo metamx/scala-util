@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.metamx.common.scala.Predef._
 import java.io.{FilterOutputStream, FilterWriter, InputStream, OutputStream, Reader, Writer}
+import scala.reflect.ClassTag
 
 object Jackson extends Jackson
 
@@ -13,24 +14,24 @@ trait Jackson
 {
   private val objectMapper = newObjectMapper()
 
-  def parse[A: ClassManifest](s: String): A = {
-    objectMapper.readValue(s, implicitly[ClassManifest[A]].erasure.asInstanceOf[Class[A]])
+  def parse[A: ClassTag](s: String): A = {
+    objectMapper.readValue(s, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
   }
 
-  def parse[A: ClassManifest](bs: Array[Byte]): A = {
-    objectMapper.readValue(bs, implicitly[ClassManifest[A]].erasure.asInstanceOf[Class[A]])
+  def parse[A: ClassTag](bs: Array[Byte]): A = {
+    objectMapper.readValue(bs, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
   }
 
-  def parse[A: ClassManifest](reader: Reader): A = {
-    objectMapper.readValue(reader, implicitly[ClassManifest[A]].erasure.asInstanceOf[Class[A]])
+  def parse[A: ClassTag](reader: Reader): A = {
+    objectMapper.readValue(reader, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
   }
 
-  def parse[A: ClassManifest](stream: InputStream): A = {
-    objectMapper.readValue(stream, implicitly[ClassManifest[A]].erasure.asInstanceOf[Class[A]])
+  def parse[A: ClassTag](stream: InputStream): A = {
+    objectMapper.readValue(stream, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
   }
 
-  def parse[A: ClassManifest](jp: JsonParser): A = {
-    objectMapper.readValue(jp, implicitly[ClassManifest[A]].erasure.asInstanceOf[Class[A]])
+  def parse[A: ClassTag](jp: JsonParser): A = {
+    objectMapper.readValue(jp, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
   }
 
   def generate[A](a: A): String = objectMapper.writeValueAsString(a)
@@ -59,7 +60,7 @@ trait Jackson
     objectMapper.writerWithDefaultPrettyPrinter().writeValue(stream, a)
   }
 
-  def normalize[A : ClassManifest](a: A) = parse[A](generate(a))
+  def normalize[A : ClassTag](a: A) = parse[A](generate(a))
 
   def newObjectMapper(): ObjectMapper = newObjectMapper(null)
 

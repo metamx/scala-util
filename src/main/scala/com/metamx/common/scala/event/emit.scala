@@ -1,13 +1,13 @@
 package com.metamx.common.scala.event
 
-import com.metamx.common.scala.Logging._
+import com.metamx.common.scala.Logger
 import com.metamx.emitter.service.{AlertBuilder, ServiceEmitter}
 import com.metamx.emitter.service.AlertEvent.Severity
 import com.metamx.common.scala.untyped._
 import com.metamx.common.scala.Jackson
 import com.metamx.common.scala.Predef._
 import scala.compat.Platform
-import org.scala_tools.time.Imports._
+import com.github.nscala_time.time.Imports._
 import org.codehaus.jackson.map.ObjectMapper
 import Severity._
 import com.google.common.base.Throwables

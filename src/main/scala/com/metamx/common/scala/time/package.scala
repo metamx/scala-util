@@ -18,12 +18,9 @@ package com.metamx.common.scala
 
 package object time {
 
+  import com.github.nscala_time.time.Imports._
   import org.apache.commons.lang.time.StopWatch
-  import org.joda.time.ReadableDateTime
-  import org.joda.time.ReadableDuration
-  import org.joda.time.ReadableInterval
-  import org.joda.time.ReadablePeriod
-  import org.scala_tools.time.Imports._
+  import org.joda.time.{ReadableDateTime, ReadableDuration, ReadableInterval, ReadablePeriod}
 
   def timed[X](f: => X): (Long, X) = {
     val timer = new StopWatch
@@ -71,7 +68,7 @@ package object time {
   }
   implicit def IntervalOps(i: ReadableInterval) = new IntervalOps(i)
 
-  implicit val dateTimeOrdering: Ordering[DateTime] = Ordering.by(_.millis)
-  implicit val durationOrdering: Ordering[Duration] = Ordering.by(_.millis)
+  implicit val dateTimeOrdering: Ordering[DateTime] = Ordering.by(_.getMillis)
+  implicit val durationOrdering: Ordering[Duration] = Ordering.by(_.getMillis)
 
 }

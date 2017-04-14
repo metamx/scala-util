@@ -1,16 +1,17 @@
 package com.metamx.common.scala
 
+import com.github.nscala_time.time.Imports._
 import com.metamx.common.scala.control._
 import com.simple.simplespec.Matchers
 import org.junit.Test
-import org.scala_tools.time.Imports._
+import scala.reflect.ClassTag
 
 class RetryOnErrorTest extends Matchers
 {
 
-  def transientFailure[E <: Exception](period: Period)(implicit cm: ClassManifest[E]) = {
+  def transientFailure[E <: Exception](period: Period)(implicit ct: ClassTag[E]) = {
     val end = DateTime.now + period
-    () => if (DateTime.now >= end) "hello world" else throw cm.erasure.newInstance().asInstanceOf[E]
+    () => if (DateTime.now >= end) "hello world" else throw ct.runtimeClass.newInstance().asInstanceOf[E]
   }
 
   @Test

@@ -17,21 +17,21 @@
  * under the License.
  */
 
+lazy val root = project.in(file("."))
+
 organization := "com.metamx"
 
 name := "scala-util"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.5", "2.11.7")
-
-lazy val root = project.in(file("."))
-
-net.virtualvoid.sbt.graph.Plugin.graphSettings
+crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1")
 
 licenses := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 
 homepage := Some(url("https://github.com/metamx/scala-util"))
+
+resolvers += "sigar" at "https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads/"
 
 publishMavenStyle := true
 
@@ -57,45 +57,70 @@ parallelExecution in Test := false
 
 testOptions += Tests.Argument(TestFrameworks.JUnit, "-Duser.timezone=UTC")
 
-releaseSettings
+releasePublishArtifactsAction := PgpKeys.publishSigned.value
 
-ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
+javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
 
-val jacksonFasterxmlVersion = "2.6.6"
-val curatorVersion = "2.10.0"
-val zookeeperVersion = "3.4.8"
-val twittersVersion = "6.31.0"
-val twitterUtilsVersion = "6.30.0"
+scalacOptions ++= Seq("-unchecked", "-deprecation")
+
+scalacOptions ++= {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, 12)) => Seq()
+    case _ => Seq("-target:jvm-1.7")
+  }
+}
+
+val curatorVersion = "2.11.1"
+val zookeeperVersion = "3.4.9"
+
+lazy val jacksonFasterxmlVersion = settingKey[String]("Jackson version")
+jacksonFasterxmlVersion := {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, 10 | 11)) => "2.6.6"
+    case _ => "2.8.7"
+  }
+}
+
+lazy val twitterUtilsVersion = settingKey[String]("Twitter utils version")
+twitterUtilsVersion := {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, 10)) => "6.34.0"
+    case _ => "6.41.0"
+  }
+}
+
+lazy val twittersVersion = settingKey[String]("Twitters version")
+twittersVersion := {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, 10)) => "6.35.0"
+    case _ => "6.42.0"
+  }
+}
 
 libraryDependencies ++= Seq(
-  "com.metamx" %% "loglady" % "1.1.0-mmx" force()
+  "com.metamx" % "java-util" % "0.28.2" force(),
+  "com.metamx" % "http-client" % "1.1.0" force(),
+  "com.metamx" % "emitter" % "0.4.3" force(),
+  "com.metamx" % "server-metrics" % "0.4.0" force()
 )
 
 libraryDependencies ++= Seq(
-  "com.metamx" % "java-util" % "0.27.4" force(),
-  "com.metamx" % "http-client" % "1.0.3" force(),
-  "com.metamx" % "emitter" % "0.3.3" force(),
-  "com.metamx" % "server-metrics" % "0.2.8" force()
-)
-
-libraryDependencies ++= Seq(
-  "org.slf4j" % "slf4j-api" % "1.7.2" force(),
-  "commons-lang" % "commons-lang" % "2.6" force(),
-  "joda-time" % "joda-time" % "2.1" force(),
-  "org.joda" % "joda-convert" % "1.6" force(),
-  "org.scalaj" %% "scalaj-time" % "0.5" force(),
-  "org.skife.config" % "config-magic" % "0.9" force(),
+  "org.slf4j" % "slf4j-api" % "1.7.25" force(),
+  "joda-time" % "joda-time" % "2.9.7" force(),
+  "org.joda" % "joda-convert" % "1.8.1" force(),
+  "org.skife.config" % "config-magic" % "0.17" force(),
   "com.google.guava" % "guava" % "16.0.1" force(),
-  "org.yaml" % "snakeyaml" % "1.11" force()
+  "org.yaml" % "snakeyaml" % "1.11" force(),
+  "com.github.nscala-time" %% "nscala-time" % "2.16.0" force()
 )
 
 libraryDependencies ++= Seq(
-  "com.fasterxml.jackson.core" % "jackson-core" % jacksonFasterxmlVersion force(),
-  "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonFasterxmlVersion force(),
-  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonFasterxmlVersion force(),
-  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-smile" % jacksonFasterxmlVersion force(),
-  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonFasterxmlVersion force(),
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonFasterxmlVersion force()
+  "com.fasterxml.jackson.core" % "jackson-core" % jacksonFasterxmlVersion.value force(),
+  "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonFasterxmlVersion.value force(),
+  "com.fasterxml.jackson.core" % "jackson-databind" % jacksonFasterxmlVersion.value force(),
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-smile" % jacksonFasterxmlVersion.value force(),
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % jacksonFasterxmlVersion.value force(),
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonFasterxmlVersion.value force()
 )
 
 libraryDependencies ++= Seq(
@@ -106,20 +131,26 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.apache.zookeeper" % "zookeeper" % zookeeperVersion exclude("log4j", "log4j") exclude("org.slf4j", "slf4j-log4j12") exclude("org.jboss.netty", "netty") force(),
+  "org.apache.zookeeper" % "zookeeper" % zookeeperVersion
+    exclude("log4j", "log4j")
+    exclude("org.slf4j", "slf4j-api")
+    exclude("org.slf4j", "slf4j-log4j12")
+    exclude("io.netty", "netty")
+    exclude("org.jboss.netty", "netty")
+    force(),
   "org.apache.curator" % "curator-framework" % curatorVersion exclude("org.jboss.netty", "netty") force(),
   "org.apache.curator" % "curator-recipes" % curatorVersion exclude("org.jboss.netty", "netty") force(),
   "org.apache.curator" % "curator-x-discovery" % curatorVersion exclude("org.jboss.netty", "netty") force()
 )
 
 libraryDependencies ++= Seq(
-  "com.twitter" %% "util-core" % twitterUtilsVersion force(),
-  "com.twitter" %% "finagle-core" % twittersVersion force(),
-  "com.twitter" %% "finagle-http" % twittersVersion force()
+  "com.twitter" %% "util-core" % twitterUtilsVersion.value force(),
+  "com.twitter" %% "finagle-core" % twittersVersion.value force(),
+  "com.twitter" %% "finagle-http" % twittersVersion.value force()
 )
 
 libraryDependencies ++= Seq(
-  "io.netty" % "netty" % "3.10.4.Final" force()
+  "io.netty" % "netty" % "3.10.6.Final" force()
 )
 
 //
@@ -127,18 +158,23 @@ libraryDependencies ++= Seq(
 //
 
 libraryDependencies ++= Seq(
-  "org.slf4j" % "slf4j-simple" % "1.7.2" % "test" force(),
+  "org.slf4j" % "slf4j-simple" % "1.7.25" % "test" force(),
   "junit" % "junit" % "4.11" % "test" force(),
   "org.mockito" % "mockito-core" % "1.9.5" % "test" force()
 )
 
-libraryDependencies <++= scalaVersion {
-  case x if x.startsWith("2.10.") => Seq(
-    "com.simple" % "simplespec_2.10.2" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force()
-  )
-  case _ => Seq(
-    "com.simple" %% "simplespec" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force()
-  )
+libraryDependencies ++= {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, 10)) => Seq(
+      "com.simple" % "simplespec_2.10.2" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force()
+    )
+    case Some((2, 11)) => Seq(
+      "com.simple" %% "simplespec" % "0.8.4" % "test" exclude("org.mockito", "mockito-all") force()
+    )
+    case _ => Seq(
+      "com.simple" %% "simplespec" % "0.9.0" % "test" exclude("org.mockito", "mockito-all") force()
+    )
+  }
 }
 
 libraryDependencies ++= Seq(

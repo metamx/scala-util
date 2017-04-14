@@ -16,33 +16,23 @@
 
 package com.metamx.common.scala.db
 
+import com.github.nscala_time.time.Imports._
 import com.mchange.v2.c3p0.DataSources
-import com.metamx.common.lifecycle.LifecycleStart
-import com.metamx.common.lifecycle.LifecycleStop
-import com.metamx.common.scala.collection._
-import com.metamx.common.scala.exception.raises
-import com.metamx.common.scala.exception._
+import com.metamx.common.lifecycle.{LifecycleStart, LifecycleStop}
+import com.metamx.common.scala.LateVal.LateVal
 import com.metamx.common.scala.Logging
 import com.metamx.common.scala.Predef._
-import java.net.URI
+import com.metamx.common.scala.collection._
+import com.metamx.common.scala.control.retryOnError
+import com.metamx.common.scala.exception.{raises, _}
+import com.metamx.common.scala.untyped.Dict
 import javax.sql.DataSource
-import org.scala_tools.time.Imports._
-import org.skife.jdbi.v2.DBI
-import org.skife.jdbi.v2.exceptions.CallbackFailedException
-import org.skife.jdbi.v2.exceptions.StatementException
-import org.skife.jdbi.v2.exceptions.TransactionFailedException
-import org.skife.jdbi.v2.Handle
-import org.skife.jdbi.v2.SQLStatement
-import org.skife.jdbi.v2.TransactionCallback
-import org.skife.jdbi.v2.TransactionStatus
+import org.skife.jdbi.v2._
+import org.skife.jdbi.v2.exceptions.{CallbackFailedException, StatementException, TransactionFailedException}
 import org.skife.jdbi.v2.tweak.HandleCallback
 import scala.collection.JavaConverters._
 import scala.collection.mutable.Buffer
 import scala.util.DynamicVariable
-
-import com.metamx.common.scala.control.retryOnError
-import com.metamx.common.scala.LateVal.LateVal
-import com.metamx.common.scala.untyped.Dict
 
 // TODO Extract not-mysql-specific stuff from MySQLDB.createIsTransient, provide base implementation here
 

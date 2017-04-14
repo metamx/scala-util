@@ -2,7 +2,7 @@ package com.metamx.common.scala.event
 
 import com.simple.simplespec.Matchers
 import org.junit.Test
-import org.scala_tools.time.Imports._
+import com.github.nscala_time.time.Imports._
 
 
 class MetricTest extends Matchers

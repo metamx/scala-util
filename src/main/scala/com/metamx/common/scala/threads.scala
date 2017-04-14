@@ -1,8 +1,8 @@
 package com.metamx.common.scala
 
-import com.metamx.common.scala.concurrent._
-import org.scala_tools.time.TypeImports._
+import com.github.nscala_time.time.Imports._
 import com.metamx.common.scala.Predef._
+import com.metamx.common.scala.concurrent._
 import scala.util.control.NonFatal
 
 object threads extends Logging

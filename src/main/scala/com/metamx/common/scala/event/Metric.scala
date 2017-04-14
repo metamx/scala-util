@@ -1,8 +1,9 @@
 package com.metamx.common.scala.event
 
-import org.scala_tools.time.Imports._
-import com.metamx.emitter.service.{ServiceMetricEvent, ServiceEventBuilder}
+import com.github.nscala_time.time.Imports._
+import com.google.common.collect.ImmutableMap
 import com.metamx.common.scala.untyped._
+import com.metamx.emitter.service.{ServiceEventBuilder, ServiceMetricEvent}
 
 // A partially constructed ServiceEventBuilder[ServiceMetricEvent]. Immutable, unlike ServiceMetricEvent.Builder.
 case class Metric(
@@ -50,14 +51,17 @@ case class Metric(
     this + Metric(userDims = Map(name -> value))
   }
 
-  // Build into a ServiceMetricEvent, throwing NullPointerException if any required field is null
   override def build(service: String, host: String) = {
+    build(ImmutableMap.of("service", service, "host", host))
+  }
+
+  // Build into a ServiceMetricEvent, throwing NullPointerException if any required field is null
+  override def build(serviceDimensions: ImmutableMap[String, String]) = {
     val builder = ServiceMetricEvent.builder()
 
     userDims.foreach { case (k, v) => builder.setDimension(k, v.toArray) }
 
-    builder.build(created, noNull(metric), noNull(value))
-      .build(noNull(service), noNull(host))
+    builder.build(created, noNull(metric), noNull(value)).build(serviceDimensions)
   }
 }
 

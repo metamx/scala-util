@@ -16,7 +16,7 @@
 
 package com.metamx.common.scala
 
-import scala.reflect.{ClassManifest => CM}
+import scala.reflect.{ClassTag, classTag}
 import scala.util.control.Exception.{catching => _catching}
 
 // TODO Tests
@@ -37,22 +37,22 @@ object exception {
   /**
    * Checks if a Throwable, or any Throwable in its cause chain, is a particular type.
    */
-  def causedBy[E <: Throwable: CM](e: Throwable) = causeMatches(e) {
-    case x if classManifest[E].erasure.isAssignableFrom(x.getClass) => true
+  def causedBy[E <: Throwable: ClassTag](e: Throwable) = causeMatches(e) {
+    case x if classTag[E].runtimeClass.isAssignableFrom(x.getClass) => true
   }
 
   def raises[E <: Throwable] = new {
-    def apply[X](x: => X)(implicit cm: CM[E], ev: NotNothing[E]): Boolean =
+    def apply[X](x: => X)(implicit ct: ClassTag[E], ev: NotNothing[E]): Boolean =
       x.catchOption[E].isEmpty
   }
 
   def toOption[E <: Throwable] = new {
-    def apply[X](x: => X)(implicit cm: CM[E], ev: NotNothing[E]): Option[X] =
+    def apply[X](x: => X)(implicit ct: ClassTag[E], ev: NotNothing[E]): Option[X] =
       x.catchOption[E]
   }
 
   def toEither[E <: Throwable] = new {
-    def apply[X](x: => X)(implicit cm: CM[E], ev: NotNothing[E]): Either[E,X] =
+    def apply[X](x: => X)(implicit ct: ClassTag[E], ev: NotNothing[E]): Either[E,X] =
       x.catchEither[E]
   }
 
@@ -80,11 +80,11 @@ object exception {
         case e if f.isDefinedAt(e) => f(e); None
       }
 
-    def catchOption[E <: Throwable : CM : NotNothing]: Option[X] =
-      _catching(classManifest[E].erasure) opt x
+    def catchOption[E <: Throwable : ClassTag : NotNothing]: Option[X] =
+      _catching(classTag[E].runtimeClass) opt x
 
-    def catchEither[E <: Throwable : CM : NotNothing]: Either[E,X] =
-      (_catching(classManifest[E].erasure) either x).left map (_.asInstanceOf[E])
+    def catchEither[E <: Throwable : ClassTag : NotNothing]: Either[E,X] =
+      (_catching(classTag[E].runtimeClass) either x).left map (_.asInstanceOf[E])
 
   }
 

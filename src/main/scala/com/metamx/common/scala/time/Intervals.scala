@@ -16,14 +16,13 @@
 
 package com.metamx.common.scala.time
 
+import com.github.nscala_time.time.Imports.{DateTime, Duration, Interval}
+import com.github.nscala_time.time.JodaImplicits._
 import com.metamx.common.scala.Predef._
-import org.scala_tools.time.Imports._
 import scala.collection.IndexedSeqLike
 import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable.Vector
-import scala.collection.mutable.Builder
-import scala.collection.mutable.ListBuffer
-import scala.collection.mutable.Stack
+import scala.collection.mutable.{Builder, ListBuffer}
 import scala.util.control.Breaks
 
 // Property: Intervals.intervals are separated (i.e. disjoint and non-contiguous), ascending, and all nonempty
@@ -45,7 +44,7 @@ extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] with Seria
   def overlaps(dt: DateTime) = self.exists(_ contains dt)
 
   def earliest(_duration: Duration) = new Intervals(Vector() ++ new ListBuffer[Interval].withEffect { results =>
-    val breaks = new Breaks; import breaks.{breakable, break}
+    val breaks = new Breaks; import breaks.{break, breakable}
     var duration = _duration
     breakable {
       for (i <- self.iterator) {
@@ -61,7 +60,7 @@ extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] with Seria
   })
 
   def latest(_duration: Duration) = new Intervals(Vector() ++ new ListBuffer[Interval].withEffect { results =>
-    val breaks = new Breaks; import breaks.{breakable, break}
+    val breaks = new Breaks; import breaks.{break, breakable}
     var duration = _duration
     breakable {
       for (i <- self.reverseIterator) {
@@ -77,7 +76,7 @@ extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] with Seria
   })
 
   def -- (that: Iterable[Interval]) = new Intervals(Vector.newBuilder[Interval].withEffect { results =>
-    val is = new Stack[Interval] pushAll self.reverseIterator // (Push reversed, pop in order)
+    var is = self
     val js = that.iterator.buffered
     def i  = is.head
     def j  = js.head
@@ -87,13 +86,13 @@ extends IndexedSeq[Interval] with IndexedSeqLike[Interval, Intervals] with Seria
       }
       if (js.isEmpty || (j isAfter i)) {
         results += i
-        is.pop
+        is = is.tail
       } else {
         val overlap = i overlap j ensuring (_ != null, "Expected overlap: %s, %s" format (i,j))
-        val (a,b) = (i.start to overlap.start, overlap.end to i.end)
-        is.pop
+        val (a, b) = (i.start to overlap.start, overlap.end to i.end)
+        is = is.tail
         if (a.millis > 0) results += a
-        if (b.millis > 0) is.push(b)
+        if (b.millis > 0) is = b +: is
       }
     }
   }.result)
@@ -123,7 +122,7 @@ object Intervals {
     // Sort input intervals by start time and build up result incrementally
     val separated = new ListBuffer[Interval]
     var current   = None : Option[Interval]
-    val ascending = intervals.toIndexedSeq sortBy ((i: Interval) => i.start.millis)
+    val ascending = intervals.toIndexedSeq sortBy ((i: Interval) => i.start.getMillis)
     for (i <- ascending; if i.millis > 0) {
       current match {
         case None                         => current = Some(i)

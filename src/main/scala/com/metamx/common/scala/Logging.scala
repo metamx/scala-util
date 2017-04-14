@@ -17,10 +17,27 @@
 package com.metamx.common.scala
 
 trait Logging {
-  @transient lazy val log = org.eintr.loglady.Logger(getClass)
-}
+  // Initialize boolean variable by default value to retain the same behaviour for deserialized class
+  @transient @volatile private var initialized: Boolean = _
+  @transient private var logger: Logger = _
 
-object Logging {
-  type Logger = org.eintr.loglady.Logger
-  val  Logger = org.eintr.loglady.Logger
+  // We emulate behaviour of lazy val because scala 2.12.1 has bug with transient lazy val
+  // https://issues.scala-lang.org/browse/SI-10244
+  def log: Logger = {
+    if (initialized) {
+      logger
+    } else {
+      compute
+    }
+  }
+
+  private def compute: Logger = {
+    synchronized {
+      if (!initialized) {
+        logger = Logger(getClass)
+        initialized = true
+      }
+      logger
+    }
+  }
 }
