@@ -71,12 +71,12 @@ scalacOptions ++= {
 }
 
 val curatorVersion = "2.11.1"
-val zookeeperVersion = "3.4.9"
+val zookeeperVersion = "3.4.10"
 
 lazy val jacksonFasterxmlVersion = settingKey[String]("Jackson version")
 jacksonFasterxmlVersion := {
   CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, 10 | 11)) => "2.6.6"
+    case Some((2, 10 | 11)) => "2.6.7"
     case _ => "2.8.7"
   }
 }
@@ -100,8 +100,8 @@ twittersVersion := {
 libraryDependencies ++= Seq(
   "com.metamx" % "java-util" % "0.28.2" force(),
   "com.metamx" % "http-client" % "1.1.0" force(),
-  "com.metamx" % "emitter" % "0.4.3" force(),
-  "com.metamx" % "server-metrics" % "0.4.0" force()
+  "com.metamx" % "emitter" % "0.4.4" force(),
+  "com.metamx" % "server-metrics" % "0.4.1" force()
 )
 
 libraryDependencies ++= Seq(
