@@ -31,8 +31,6 @@ licenses := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/lice
 
 homepage := Some(url("https://github.com/metamx/scala-util"))
 
-resolvers += "sigar" at "https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads/"
-
 publishMavenStyle := true
 
 publishTo := Some("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2/")
@@ -85,7 +83,7 @@ lazy val twitterUtilsVersion = settingKey[String]("Twitter utils version")
 twitterUtilsVersion := {
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, 10)) => "6.34.0"
-    case _ => "6.41.0"
+    case _ => "6.42.0"
   }
 }
 
@@ -93,7 +91,7 @@ lazy val twittersVersion = settingKey[String]("Twitters version")
 twittersVersion := {
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, 10)) => "6.35.0"
-    case _ => "6.42.0"
+    case _ => "6.43.0"
   }
 }
 
@@ -101,7 +99,7 @@ libraryDependencies ++= Seq(
   "com.metamx" % "java-util" % "0.28.2" force(),
   "com.metamx" % "http-client" % "1.1.0" force(),
   "com.metamx" % "emitter" % "0.4.4" force(),
-  "com.metamx" % "server-metrics" % "0.4.1" force()
+  "com.metamx" % "server-metrics" % "0.4.2" force()
 )
 
 libraryDependencies ++= Seq(
