@@ -48,6 +48,40 @@ class MetricTest extends Matchers
   }
 
   @Test
+  def testUnionWithCustomFeed(): Unit = {
+    val m1 = Metric(metric = "metric", feed = "test_feed")
+    val m2 = Metric(value = 1)
+
+    val res = m1 + m2
+
+    res.metric  must be ("metric")
+    res.value   must be (1)
+    res.feed    must be ("test_feed")
+  }
+
+  @Test
+  def testUnionWithSameCustomFeeds(): Unit = {
+    val m1 = Metric(metric = "metric", feed = "test_feed")
+    val m2 = Metric(value = 1, feed = "test_feed")
+
+    val res = m1 + m2
+
+    res.metric  must be ("metric")
+    res.value   must be (1)
+    res.feed    must be ("test_feed")
+  }
+
+  @Test
+  def testUnionWithDifferentCustomFeeds(): Unit = {
+    val m1 = Metric(metric = "metric", feed = "test_feed")
+    val m2 = Metric(value = 1, feed = "another_test_feed")
+
+    evaluating {
+      m1 + m2
+    } must throwAn[IllegalArgumentException]("feed already defined as test_feed, refusing to shadow with another_test_feed")
+  }
+
+  @Test
   def testBuildServiceMetric() {
     val event = Metric(
       metric = "metric",
@@ -62,6 +96,21 @@ class MetricTest extends Matchers
 
     event.getUserDims.containsKey("dim1") must be(true)
     event.getUserDims.containsKey("dim2") must be(true)
+  }
+
+  @Test
+  def testBuildCustomFeed(): Unit = {
+    val event = Metric(
+      metric = "metric",
+      value = 1,
+      feed = "test_feed"
+    ).build("test", "localhost")
+
+    event.getService  must be ("test")
+    event.getHost     must be ("localhost")
+    event.getMetric   must be ("metric")
+    event.getValue    must be (1)
+    event.getFeed     must be ("test_feed")
   }
 
   @Test

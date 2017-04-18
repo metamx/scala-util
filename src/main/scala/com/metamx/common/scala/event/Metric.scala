@@ -10,16 +10,27 @@ case class Metric(
   metric:   String,
   value:    Number,
   userDims: Map[String, Iterable[String]],
-  created:  DateTime
+  created:  DateTime,
+  feed: String
 ) extends ServiceEventBuilder[ServiceMetricEvent]
 {
 
   // Join two partially constructed metrics; throw IllegalArgumentException if any field is defined on both
   def +(that: Metric): Metric = {
-    def f[X >: Null](x: X, y: X, desc: String): X = (Option(x), Option(y)) match {
+    def onlyOne[X >: Null](x: X, y: X, desc: String): X = (Option(x), Option(y)) match {
       case (None, None) => null
       case (Some(x), None) => x
       case (None, Some(y)) => y
+      case (Some(x), Some(y)) => throw new IllegalArgumentException(
+        "%s already defined as %s, refusing to shadow with %s" format(desc, x, y)
+      )
+    }
+
+    def onlyOneOrEqual[X >: Null](x: X, y: X, desc: String): X = (Option(x), Option(y)) match {
+      case (None, None) => null
+      case (Some(x), None) => x
+      case (None, Some(y)) => y
+      case (Some(x), Some(y)) if x == y => x
       case (Some(x), Some(y)) => throw new IllegalArgumentException(
         "%s already defined as %s, refusing to shadow with %s" format(desc, x, y)
       )
@@ -36,10 +47,11 @@ case class Metric(
     }
 
     new Metric(
-      metric = f(this.metric, that.metric, "metric"),
-      value = f(this.value, that.value, "value"),
+      metric = onlyOne(this.metric, that.metric, "metric"),
+      value = onlyOne(this.value, that.value, "value"),
       userDims = intersectMap(this.userDims, that.userDims),
-      created = f(this.created, that.created, "created")
+      created = onlyOne(this.created, that.created, "created"),
+      feed = onlyOneOrEqual(this.feed, that.feed, "feed")
     )
   }
 
@@ -51,14 +63,14 @@ case class Metric(
     this + Metric(userDims = Map(name -> value))
   }
 
-  override def build(service: String, host: String) = {
-    build(ImmutableMap.of("service", service, "host", host))
+  override def build(service: String, host: String): ServiceMetricEvent = {
+    build(ImmutableMap.of("service", noNull(service), "host", noNull(host)))
   }
 
   // Build into a ServiceMetricEvent, throwing NullPointerException if any required field is null
-  override def build(serviceDimensions: ImmutableMap[String, String]) = {
+  override def build(serviceDimensions: ImmutableMap[String, String]): ServiceMetricEvent = {
     val builder = ServiceMetricEvent.builder()
-
+    Option(feed).foreach(builder.setFeed)
     userDims.foreach { case (k, v) => builder.setDimension(k, v.toArray) }
 
     builder.build(created, noNull(metric), noNull(value)).build(serviceDimensions)
@@ -82,10 +94,11 @@ object Metric
     user9:    Iterable[String] = null,
     user10:   Iterable[String] = null,
     created:  DateTime = null,
-    userDims: Map[String, Iterable[String]] = Map.empty
+    userDims: Map[String, Iterable[String]] = Map.empty,
+    feed: String = null
   ) =
   {
-    var result = new Metric(metric, value, userDims, created)
+    var result = new Metric(metric, value, userDims, created, feed)
 
     if (user1  != null) { result = result + ("user1",  user1)  }
     if (user2  != null) { result = result + ("user2",  user2)  }

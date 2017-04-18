@@ -8,7 +8,7 @@ import scala.collection.mutable
   * Use this when too lazy to create a domain-specific Counters class.
   * Aggregates values per each metric & dimensions pair.
   */
-class NumericCounters[A](converter: (Numeric[A], A) => Number)(implicit numeric: Numeric[A]) extends Counters
+class NumericCounters[A](converter: (Numeric[A], A) => Number, feed: String = null)(implicit numeric: Numeric[A]) extends Counters
 {
   private[this] val lock = new AnyRef
   private[this] val map = mutable.Map[(String, Map[String, Iterable[String]]), A]()
@@ -44,7 +44,8 @@ class NumericCounters[A](converter: (Numeric[A], A) => Number)(implicit numeric:
             metric = metric,
             value = converter(numeric, value),
             userDims = dims,
-            created = null
+            created = null,
+            feed
           )
       }.toList
       map.clear()
@@ -53,6 +54,6 @@ class NumericCounters[A](converter: (Numeric[A], A) => Number)(implicit numeric:
   }
 }
 
-class LongCounters extends NumericCounters[Long](converter = (numeric, x) => numeric.toLong(x))
+class LongCounters(feed: String = null) extends NumericCounters[Long](converter = (numeric, x) => numeric.toLong(x), feed)
 
-class DoubleCounters extends NumericCounters[Double](converter = (numeric, x) => numeric.toDouble(x))
+class DoubleCounters(feed: String = null) extends NumericCounters[Double](converter = (numeric, x) => numeric.toDouble(x), feed)

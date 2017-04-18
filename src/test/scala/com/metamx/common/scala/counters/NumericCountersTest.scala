@@ -5,22 +5,38 @@ import org.junit.Test
 
 class NumericCountersTest extends Matchers
 {
+  private def makeMetrics(counters: LongCounters) = {
+    counters.snapshotAndReset().map {
+      m =>
+        val key =
+          "%s: %s & (%s)".format(
+            m.build("test", "localhost").getFeed,
+            m.metric,
+            m.userDims.toSeq.map{
+              case (dim, values) => "%s -> %s".format(dim, values.mkString(", "))
+            }.sorted.mkString("; ")
+          )
+        key -> m.value.toString
+    }.toMap
+  }
+
+  private def makeMetrics(counters: DoubleCounters) = {
+    counters.snapshotAndReset().map {
+      m =>
+        val key =
+          "%s: %s & (%s)".format(
+            m.build("test", "localhost").getFeed,
+            m.metric,
+            m.userDims.toSeq.map{
+              case (dim, values) => "%s -> %s".format(dim, values.mkString(", "))
+            }.sorted.mkString("; ")
+          )
+        key -> "%.0f".format(m.value.doubleValue())
+    }.toMap
+  }
+
   @Test def testLong() {
     val counters = new LongCounters
-
-    def makeMetrics() = {
-      counters.snapshotAndReset().map {
-        m =>
-          val key =
-            "%s & (%s)".format(
-              m.metric,
-              m.userDims.toSeq.map{
-                case (dim, values) => "%s -> %s".format(dim, values.mkString(", "))
-              }.sorted.mkString("; ")
-            )
-          key -> m.value.toString
-      }.toMap
-    }
 
     counters.inc("a", Map("x" -> Seq("1")))
     counters.add("a", Map("x" -> Seq("1")), 2)
@@ -35,36 +51,23 @@ class NumericCountersTest extends Matchers
     counters.add("c", Map("x" -> Seq("1")), 10)
     counters.del("c", Map("x" -> Seq("1")))
 
-    makeMetrics() must be (Map(
-      "a & (x -> 1)" -> "3",
-      "a & (x -> 1, 2)" -> "10",
-      "a & (x -> 1; y -> 3)" -> "100",
-      "b & (z -> 4)" -> "10001"
+    makeMetrics(counters) must be (Map(
+      "metrics: a & (x -> 1)" -> "3",
+      "metrics: a & (x -> 1, 2)" -> "10",
+      "metrics: a & (x -> 1; y -> 3)" -> "100",
+      "metrics: b & (z -> 4)" -> "10001"
     ))
 
     counters.inc("a", Map("x" -> Seq("1")))
 
-    makeMetrics() must be (Map(
-      "a & (x -> 1)" -> "1"
+    makeMetrics(counters) must be (Map(
+      "metrics: a & (x -> 1)" -> "1"
     ))
   }
 
   @Test def testDouble() {
-    val counters = new DoubleCounters
+    implicit val counters = new DoubleCounters
 
-    def makeMetrics() = {
-      counters.snapshotAndReset().map {
-        m =>
-          val key =
-            "%s & (%s)".format(
-              m.metric,
-              m.userDims.toSeq.map{
-                case (dim, values) => "%s -> %s".format(dim, values.mkString(", "))
-              }.sorted.mkString("; ")
-            )
-          key -> "%.0f".format(m.value.doubleValue())
-      }.toMap
-    }
 
     counters.inc("a", Map("x" -> Seq("1")))
     counters.add("a", Map("x" -> Seq("1")), 2.0)
@@ -79,17 +82,36 @@ class NumericCountersTest extends Matchers
     counters.add("c", Map("x" -> Seq("1")), 10.0)
     counters.del("c", Map("x" -> Seq("1")))
 
-    makeMetrics() must be (Map(
-      "a & (x -> 1)" -> "3",
-      "a & (x -> 1, 2)" -> "10",
-      "a & (x -> 1; y -> 3)" -> "100",
-      "b & (z -> 4)" -> "10001"
+    makeMetrics(counters) must be (Map(
+      "metrics: a & (x -> 1)" -> "3",
+      "metrics: a & (x -> 1, 2)" -> "10",
+      "metrics: a & (x -> 1; y -> 3)" -> "100",
+      "metrics: b & (z -> 4)" -> "10001"
     ))
 
     counters.inc("a", Map("x" -> Seq("1")))
 
-    makeMetrics() must be (Map(
-      "a & (x -> 1)" -> "1"
+    makeMetrics(counters) must be (Map(
+      "metrics: a & (x -> 1)" -> "1"
+    ))
+  }
+
+  @Test def testLongWithCustomFeed(): Unit = {
+    val counters = new LongCounters("test_feed")
+
+    counters.inc("a", Map("x" -> Seq("1")))
+    counters.add("a", Map("x" -> Seq("1")), 2)
+    counters.inc("b", Map("z" -> Seq("4")))
+
+    makeMetrics(counters) must be (Map(
+      "test_feed: a & (x -> 1)" -> "3",
+      "test_feed: b & (z -> 4)" -> "1"
+    ))
+
+    counters.inc("a", Map("x" -> Seq("1")))
+
+    makeMetrics(counters) must be (Map(
+      "test_feed: a & (x -> 1)" -> "1"
     ))
   }
 }
