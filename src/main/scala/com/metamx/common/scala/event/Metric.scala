@@ -80,6 +80,7 @@ case class Metric(
 //This object for backward compatibility with old stuff
 object Metric
 {
+  @deprecated("userX dimensions are deprecated", "1.13.2")
   def apply(
     metric:   String = null,
     value:    Number = null,
