@@ -16,8 +16,7 @@
 
 package com.metamx.common.scala.time
 
-import com.github.nscala_time.time.Imports.{DateTime, Duration, Interval}
-import com.github.nscala_time.time.JodaImplicits._
+import com.github.nscala_time.time.Imports._
 import com.metamx.common.scala.Predef._
 import scala.collection.IndexedSeqLike
 import scala.collection.generic.CanBuildFrom

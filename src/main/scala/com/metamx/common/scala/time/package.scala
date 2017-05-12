@@ -68,7 +68,4 @@ package object time {
   }
   implicit def IntervalOps(i: ReadableInterval) = new IntervalOps(i)
 
-  implicit val dateTimeOrdering: Ordering[DateTime] = Ordering.by(_.getMillis)
-  implicit val durationOrdering: Ordering[Duration] = Ordering.by(_.getMillis)
-
 }
