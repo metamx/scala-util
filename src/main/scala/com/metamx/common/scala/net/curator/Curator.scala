@@ -16,7 +16,8 @@ object Curator
       .retryPolicy(new ExponentialBackoffRetry(1000, 30))
       .build()
 
-    lifecycle.addHandler(
+    // Allow to create curator even if lifecycle is already created
+    lifecycle.addMaybeStartHandler(
       new Handler
       {
         def start() {

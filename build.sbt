@@ -156,6 +156,10 @@ libraryDependencies ++= Seq(
 //
 
 libraryDependencies ++= Seq(
+  "org.apache.curator" % "curator-test" % curatorVersion % "test"
+    exclude("org.jboss.netty", "netty")
+    exclude("log4j", "log4j")
+    force(),
   "org.slf4j" % "slf4j-simple" % "1.7.25" % "test" force(),
   "junit" % "junit" % "4.11" % "test" force(),
   "org.mockito" % "mockito-core" % "1.9.5" % "test" force()
