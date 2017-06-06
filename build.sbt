@@ -136,9 +136,18 @@ libraryDependencies ++= Seq(
     exclude("io.netty", "netty")
     exclude("org.jboss.netty", "netty")
     force(),
-  "org.apache.curator" % "curator-framework" % curatorVersion exclude("org.jboss.netty", "netty") force(),
-  "org.apache.curator" % "curator-recipes" % curatorVersion exclude("org.jboss.netty", "netty") force(),
-  "org.apache.curator" % "curator-x-discovery" % curatorVersion exclude("org.jboss.netty", "netty") force()
+  "org.apache.curator" % "curator-framework" % curatorVersion
+    exclude("org.apache.zookeeper", "zookeeper")
+    exclude("org.jboss.netty", "netty")
+    force(),
+  "org.apache.curator" % "curator-recipes" % curatorVersion
+    exclude("org.apache.zookeeper", "zookeeper")
+    exclude("org.jboss.netty", "netty")
+    force(),
+  "org.apache.curator" % "curator-x-discovery" % curatorVersion
+    exclude("org.apache.zookeeper", "zookeeper")
+    exclude("org.jboss.netty", "netty")
+    force()
 )
 
 libraryDependencies ++= Seq(
