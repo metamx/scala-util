@@ -16,18 +16,27 @@
 
 package com.metamx.common.scala
 
+import com.metamx.common.scala.timekeeper.Timekeeper
+
 package object time {
 
   import com.github.nscala_time.time.Imports._
-  import org.apache.commons.lang.time.StopWatch
-  import org.joda.time.{ReadableDateTime, ReadableDuration, ReadableInterval, ReadablePeriod}
+  import org.joda.time.ReadableDateTime
+  import org.joda.time.ReadableDuration
+  import org.joda.time.ReadableInterval
+  import org.joda.time.ReadablePeriod
 
   def timed[X](f: => X): (Long, X) = {
-    val timer = new StopWatch
-    timer.start
+    val start = System.currentTimeMillis()
     val x = f
-    timer.stop
-    (timer.getTime, x)
+    val end = System.currentTimeMillis()
+    (end - start, x)
+  }
+
+  def timed[X](timekeeper: Timekeeper)(f: => X): (Long, X) = {
+    val start = timekeeper.now
+    val x = f
+    (timekeeper.now.getMillis - start.getMillis, x)
   }
 
   class DateTimeOps(t: ReadableDateTime) {
