@@ -18,7 +18,8 @@ package com.metamx.common.scala
 
 import com.metamx.common.scala.Predef.EffectOps
 import scala.collection.generic.{CanBuildFrom => CBF}
-import scala.collection.{MapLike, TraversableLike}
+import scala.collection.MapLike
+import scala.collection.TraversableLike
 
 package object collection {
 
@@ -148,6 +149,14 @@ package object collection {
     }
 
     def headOpt[V](key: A)(implicit ev: B <:< Iterable[V]) = m.get(key).flatMap(_.headOption)
+
+    def extractPrefixed(prefix: String)(implicit ev: A =:= String): Map[String, B] = {
+      val prefixDot = "%s.".format(prefix)
+      m.collect {
+        case (k: String, v) if k.startsWith(prefixDot) =>
+          k.stripPrefix(prefixDot) -> v
+      }.toMap
+    }
 
   }
   implicit def MapLikeOps[A, B, Repr <: MapLike[A, B, Repr] with scala.collection.Map[A, B]](m: MapLike[A, B, Repr]) = new MapLikeOps[A, B, Repr](m)
