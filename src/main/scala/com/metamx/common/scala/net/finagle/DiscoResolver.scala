@@ -28,7 +28,8 @@ class DiscoResolver(disco: Disco) extends Resolver with Logging
         val newInstances = serviceCache.getInstances.asScala.toSet
         log.info("Updating instances for service[%s] to %s", service, newInstances)
         val newSocketAddresses: Set[Address] = newInstances map
-          (instance => Address(new InetSocketAddress(instance.getAddress, instance.getPort)))
+          (instance => Address(new InetSocketAddress(instance.getAddress,
+            if (instance.getSslPort != null && instance.getSslPort > 0) instance.getSslPort else instance.getPort)))
         updatable.update(Addr.Bound(newSocketAddresses))
       }
       serviceCache.addListener(
