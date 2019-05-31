@@ -25,7 +25,7 @@ name := "scala-util"
 
 scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1")
+crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8")
 
 licenses := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 
@@ -96,10 +96,7 @@ twittersVersion := {
 }
 
 libraryDependencies ++= Seq(
-  "com.metamx" % "java-util" % "0.28.2" force(),
-  "com.metamx" % "http-client" % "1.1.0" force(),
-  "com.metamx" % "emitter" % "0.4.5" force(),
-  "com.metamx" % "server-metrics" % "0.4.3" force()
+  "com.metamx" % "java-util" % "1.3.5" force()
 )
 
 libraryDependencies ++= Seq(

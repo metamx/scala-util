@@ -1,21 +1,22 @@
 package com.metamx.common.scala.event
 
-import com.metamx.common.scala.Logger
-import com.metamx.emitter.service.{AlertBuilder, ServiceEmitter}
-import com.metamx.emitter.service.AlertEvent.Severity
-import com.metamx.common.scala.untyped._
-import com.metamx.common.scala.Jackson
-import com.metamx.common.scala.Predef._
-import scala.compat.Platform
 import com.github.nscala_time.time.Imports._
-import org.codehaus.jackson.map.ObjectMapper
-import Severity._
 import com.google.common.base.Throwables
+import com.metamx.common.scala.Jackson
+import com.metamx.common.scala.Logger
+import com.metamx.common.scala.Predef._
+import com.metamx.common.scala.untyped._
+import com.metamx.emitter.service.AlertEvent.Severity
+import com.metamx.emitter.service.AlertEvent.Severity._
+import com.metamx.emitter.service.AlertBuilder
+import com.metamx.emitter.service.ServiceEmitter
+import org.codehaus.jackson.map.ObjectMapper
+import scala.compat.Platform
 
 object emit
 {
 
-  def emitAlert(log: Logger, emitter: ServiceEmitter, severity: Severity, description: String, data: Dict) {
+  def emitAlert(log: Logger, emitter: ServiceEmitter, severity: Severity, description: String, data: Dict): Unit = {
     emitAlert(null, log, emitter, severity, description, data)
   }
 
@@ -26,13 +27,13 @@ object emit
     severity:    Severity,
     description: String,
     data:        Dict
-    ) {
+    ): Unit = {
     ((if (severity == ANOMALY) log.warn(_,_) else log.error(_,_)): (Throwable, String) => Unit)(
       e, "Emitting alert: [%s] %s\n%s" format (severity, description, Jackson.pretty(data))
     )
 
-    emitter.emit({
-      AlertBuilder.create(description).severity(severity) withEffect {
+    emitter.emit(
+      AlertBuilder.create(description).severity(severity).withEffect {
         x =>
           (dict(normalizeJavaViaJson(data)) ++
             Option(e).map(
@@ -45,11 +46,13 @@ object emit
             case (k, v) => x.addData(k, v)
           }
       }
-    } build)
+    )
   }
 
-  def emitMetricTimed[T](emitter: ServiceEmitter,
-    metric: Metric)(action: => T) = {
+  def emitMetricTimed[T](
+    emitter: ServiceEmitter,
+    metric: Metric
+  )(action: => T): T = {
     val t0 = Platform.currentTime
     val res = action
     val t = Platform.currentTime - t0
