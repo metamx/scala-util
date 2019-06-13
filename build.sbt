@@ -96,7 +96,7 @@ twittersVersion := {
 }
 
 libraryDependencies ++= Seq(
-  "com.metamx" % "java-util" % "1.3.5" force()
+  "com.metamx" % "java-util" % "1.3.6" force()
 )
 
 libraryDependencies ++= Seq(
